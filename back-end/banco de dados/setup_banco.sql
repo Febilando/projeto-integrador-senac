@@ -7,12 +7,26 @@ USE GerenciadorPedidos;
 GO
 
 
+CREATE TABLE funcao (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    nome NVARCHAR(50) NOT NULL UNIQUE
+);
+GO
+
+
+INSERT INTO funcao (nome)
+VALUES (N'admin'), (N'vendedor');
+GO
+
+
 CREATE TABLE Usuario (
     id INT IDENTITY(1,1) PRIMARY KEY,
     nome NVARCHAR(150) NOT NULL,
-    funcao NVARCHAR(50) NOT NULL,
+    funcao INT NOT NULL,
     status VARCHAR(20) NOT NULL
-        CONSTRAINT DF_Usuario_status DEFAULT 'ativo'
+        CONSTRAINT DF_Usuario_status DEFAULT 'ativo',
+    CONSTRAINT FK_Usuario_funcao FOREIGN KEY (funcao)
+        REFERENCES funcao(id)
 );
 GO
 
@@ -32,10 +46,7 @@ CREATE TABLE Pedido (
     horario DATETIME2 NOT NULL
         CONSTRAINT DF_Pedido_horario DEFAULT SYSDATETIME(),
     pagamento NVARCHAR(50) NOT NULL,
-    compradorId INT NOT NULL,
     vendedorId INT NOT NULL,
-    CONSTRAINT FK_Pedido_Comprador FOREIGN KEY (compradorId)
-        REFERENCES Usuario(id),
     CONSTRAINT FK_Pedido_Vendedor FOREIGN KEY (vendedorId)
         REFERENCES Usuario(id)
 );
