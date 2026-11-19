@@ -22,6 +22,7 @@ GO
 CREATE TABLE Usuario (
     id INT IDENTITY(1,1) PRIMARY KEY,
     nome NVARCHAR(150) NOT NULL,
+    senha NVARCHAR(255) NOT NULL,
     funcao INT NOT NULL,
     status VARCHAR(20) NOT NULL
         CONSTRAINT DF_Usuario_status DEFAULT 'ativo',
