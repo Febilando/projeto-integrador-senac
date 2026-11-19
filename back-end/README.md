@@ -20,6 +20,8 @@ docker run --rm -p 8000:8000 `
 
 O SQL Server precisa aceitar conexões TCP/IP e autenticação SQL. A API fica disponível em <http://localhost:8000> e a documentação em <http://localhost:8000/docs>.
 
+
+Se não quiser utilizar o docker:
 ## Instalação
 ```powershell
 cd back-end
