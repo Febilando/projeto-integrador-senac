@@ -1,9 +1,9 @@
 
-CREATE DATABASE BancoIAPecas;
+CREATE DATABASE GerenciadorPedidos;
 GO
 
 
-USE BancoIAPecas;
+USE GerenciadorPedidos;
 GO
 
 
