@@ -38,6 +38,7 @@ Documentação: <http://127.0.0.1:8000/docs>
 
 ## Rotas iniciais
 - `GET /`
-- `GET /analises`
-- `POST /analises`
+- `GET /usuarios` e `GET /usuarios/{id}`
+- `GET /produtos` e `GET /produtos/{id}`
+- `GET /pedidos` e `GET /pedidos/{id}`
 
