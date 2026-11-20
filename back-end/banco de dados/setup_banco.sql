@@ -1,57 +1,49 @@
 
-CREATE DATABASE GerenciadorPedidos;
-GO
-
-
+CREATE DATABASE IF NOT EXISTS GerenciadorPedidos
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
 USE GerenciadorPedidos;
-GO
 
 
 CREATE TABLE funcao (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    nome NVARCHAR(50) NOT NULL UNIQUE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL UNIQUE
 );
-GO
 
 
 INSERT INTO funcao (nome)
-VALUES (N'admin'), (N'vendedor');
-GO
+VALUES ('admin'), ('vendedor');
 
 
 CREATE TABLE Usuario (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    nome NVARCHAR(150) NOT NULL,
-    senha NVARCHAR(255) NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    senha VARCHAR(255) NOT NULL,
     funcao INT NOT NULL,
     status VARCHAR(20) NOT NULL
-        CONSTRAINT DF_Usuario_status DEFAULT 'ativo',
+        DEFAULT 'ativo',
     CONSTRAINT FK_Usuario_funcao FOREIGN KEY (funcao)
         REFERENCES funcao(id)
-);
-GO
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE Produto (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    nome NVARCHAR(150) NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
     estoque INT NOT NULL
-        CONSTRAINT CK_Produto_estoque CHECK (estoque >= 0),
-    img NVARCHAR(500) NULL
-);
-GO
+        CHECK (estoque >= 0),
+    img VARCHAR(500) NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE Pedido (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    horario DATETIME2 NOT NULL
-        CONSTRAINT DF_Pedido_horario DEFAULT SYSDATETIME(),
-    pagamento NVARCHAR(50) NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    horario DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    pagamento VARCHAR(50) NOT NULL,
     vendedorId INT NOT NULL,
     CONSTRAINT FK_Pedido_Vendedor FOREIGN KEY (vendedorId)
         REFERENCES Usuario(id)
-);
-GO
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE ProdutosPedido (
@@ -62,7 +54,6 @@ CREATE TABLE ProdutosPedido (
         REFERENCES Pedido(id),
     CONSTRAINT FK_ProdutosPedido_Produto FOREIGN KEY (produtoId)
         REFERENCES Produto(id)
-);
-GO
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

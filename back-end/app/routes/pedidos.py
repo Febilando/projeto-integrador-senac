@@ -1,4 +1,4 @@
-import pyodbc
+from pymysql.err import IntegrityError
 from fastapi import APIRouter, HTTPException, Response, status
 
 from app.conexao import conectar_banco
@@ -9,10 +9,10 @@ router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
 
 def pedido_dict(linha, produtos):
     return {
-        "id": linha.id,
-        "horario": linha.horario,
-        "pagamento": linha.pagamento,
-        "vendedorId": linha.vendedorId,
+        "id": linha["id"],
+        "horario": linha["horario"],
+        "pagamento": linha["pagamento"],
+        "vendedorId": linha["vendedorId"],
         "produtos": produtos,
     }
 
@@ -28,38 +28,38 @@ def buscar_pedidos(cursor, pedido_id=None):
                   LEFT JOIN ProdutosPedido AS pp ON pp.pedidoId = p.id"""
     parametros = ()
     if pedido_id is not None:
-        consulta += " WHERE p.id = ?"
+        consulta += " WHERE p.id = %s"
         parametros = (pedido_id,)
     consulta += " ORDER BY p.id DESC, pp.produtoId"
-    cursor.execute(consulta, *parametros)
+    cursor.execute(consulta, parametros)
 
     pedidos = {}
     for linha in cursor.fetchall():
-        if linha.id not in pedidos:
-            pedidos[linha.id] = pedido_dict(linha, [])
-        if linha.produtoId is not None:
-            pedidos[linha.id]["produtos"].append(linha.produtoId)
+        if linha["id"] not in pedidos:
+            pedidos[linha["id"]] = pedido_dict(linha, [])
+        if linha["produtoId"] is not None:
+            pedidos[linha["id"]]["produtos"].append(linha["produtoId"])
     return list(pedidos.values())
 
 
 def validar_referencias(cursor, pedido):
-    cursor.execute("SELECT id FROM Usuario WHERE id = ?", pedido.vendedorId)
+    cursor.execute("SELECT id FROM Usuario WHERE id = %s", (pedido.vendedorId,))
     if cursor.fetchone() is None:
         raise HTTPException(status_code=422, detail="O vendedor informado não existe.")
 
-    placeholders = ", ".join("?" for _ in pedido.produtos)
+    placeholders = ", ".join("%s" for _ in pedido.produtos)
     cursor.execute(
         f"SELECT id FROM Produto WHERE id IN ({placeholders})",
-        *pedido.produtos,
+        tuple(pedido.produtos),
     )
-    encontrados = {linha.id for linha in cursor.fetchall()}
+    encontrados = {linha["id"] for linha in cursor.fetchall()}
     if encontrados != set(pedido.produtos):
         raise HTTPException(status_code=422, detail="Um ou mais produtos não existem.")
 
 
 def inserir_produtos(cursor, pedido_id, produtos):
     cursor.executemany(
-        "INSERT INTO ProdutosPedido (pedidoId, produtoId) VALUES (?, ?)",
+        "INSERT INTO ProdutosPedido (pedidoId, produtoId) VALUES (%s, %s)",
         [(pedido_id, produto_id) for produto_id in produtos],
     )
 
@@ -95,14 +95,16 @@ def criar_pedido(pedido: PedidoEntrada):
             cursor = conexao.cursor()
             validar_referencias(cursor, pedido)
             cursor.execute(
-                """INSERT INTO Pedido (pagamento, vendedorId)
-                   OUTPUT INSERTED.id, INSERTED.horario, INSERTED.pagamento, INSERTED.vendedorId
-                   VALUES (?, ?)""",
-                pedido.pagamento,
-                pedido.vendedorId,
+                "INSERT INTO Pedido (pagamento, vendedorId) VALUES (%s, %s)",
+                (pedido.pagamento, pedido.vendedorId),
+            )
+            pedido_id = cursor.lastrowid
+            cursor.execute(
+                "SELECT id, horario, pagamento, vendedorId FROM Pedido WHERE id = %s",
+                (pedido_id,),
             )
             linha = cursor.fetchone()
-            inserir_produtos(cursor, linha.id, pedido.produtos)
+            inserir_produtos(cursor, pedido_id, pedido.produtos)
             return pedido_dict(linha, pedido.produtos)
     except HTTPException:
         raise
@@ -117,18 +119,15 @@ def atualizar_pedido(pedido_id: int, pedido: PedidoEntrada):
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             validar_referencias(cursor, pedido)
-            cursor.execute("SELECT id FROM Pedido WHERE id = ?", pedido_id)
+            cursor.execute("SELECT id FROM Pedido WHERE id = %s", (pedido_id,))
             if cursor.fetchone() is None:
                 raise HTTPException(status_code=404, detail="Pedido não encontrado.")
 
             cursor.execute(
-                """UPDATE Pedido SET pagamento = ?, vendedorId = ?
-                   WHERE id = ?""",
-                pedido.pagamento,
-                pedido.vendedorId,
-                pedido_id,
+                "UPDATE Pedido SET pagamento = %s, vendedorId = %s WHERE id = %s",
+                (pedido.pagamento, pedido.vendedorId, pedido_id),
             )
-            cursor.execute("DELETE FROM ProdutosPedido WHERE pedidoId = ?", pedido_id)
+            cursor.execute("DELETE FROM ProdutosPedido WHERE pedidoId = %s", (pedido_id,))
             inserir_produtos(cursor, pedido_id, pedido.produtos)
             pedidos = buscar_pedidos(cursor, pedido_id)
             return pedidos[0]
@@ -143,14 +142,14 @@ def excluir_pedido(pedido_id: int):
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
-            cursor.execute("DELETE FROM ProdutosPedido WHERE pedidoId = ?", pedido_id)
-            cursor.execute("DELETE FROM Pedido WHERE id = ?", pedido_id)
+            cursor.execute("DELETE FROM ProdutosPedido WHERE pedidoId = %s", (pedido_id,))
+            cursor.execute("DELETE FROM Pedido WHERE id = %s", (pedido_id,))
             if cursor.rowcount == 0:
                 raise HTTPException(status_code=404, detail="Pedido não encontrado.")
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     except HTTPException:
         raise
-    except pyodbc.IntegrityError as erro:
+    except IntegrityError as erro:
         raise HTTPException(status_code=409, detail="Não foi possível excluir o pedido.") from erro
     except Exception as erro:
         raise HTTPException(status_code=500, detail="Erro ao excluir pedido.") from erro

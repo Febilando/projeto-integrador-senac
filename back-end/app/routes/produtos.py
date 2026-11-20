@@ -1,4 +1,4 @@
-import pyodbc
+from pymysql.err import IntegrityError
 from fastapi import APIRouter, HTTPException, Response, status
 
 from app.conexao import conectar_banco
@@ -9,10 +9,10 @@ router = APIRouter(prefix="/produtos", tags=["Produtos"])
 
 def produto_dict(linha):
     return {
-        "id": linha.id,
-        "nome": linha.nome,
-        "estoque": linha.estoque,
-        "img": linha.img,
+        "id": linha["id"],
+        "nome": linha["nome"],
+        "estoque": linha["estoque"],
+        "img": linha["img"],
     }
 
 
@@ -33,8 +33,8 @@ def buscar_produto(produto_id: int):
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
-                "SELECT id, nome, estoque, img FROM Produto WHERE id = ?",
-                produto_id,
+                "SELECT id, nome, estoque, img FROM Produto WHERE id = %s",
+                (produto_id,),
             )
             linha = cursor.fetchone()
             if linha is None:
@@ -53,11 +53,13 @@ def criar_produto(produto: ProdutoEntrada):
             cursor = conexao.cursor()
             cursor.execute(
                 """INSERT INTO Produto (nome, estoque, img)
-                   OUTPUT INSERTED.id, INSERTED.nome, INSERTED.estoque, INSERTED.img
-                   VALUES (?, ?, ?)""",
-                produto.nome,
-                produto.estoque,
-                produto.img,
+                   VALUES (%s, %s, %s)""",
+                (produto.nome, produto.estoque, produto.img),
+            )
+            produto_id = cursor.lastrowid
+            cursor.execute(
+                "SELECT id, nome, estoque, img FROM Produto WHERE id = %s",
+                (produto_id,),
             )
             return produto_dict(cursor.fetchone())
     except Exception as erro:
@@ -69,20 +71,20 @@ def atualizar_produto(produto_id: int, produto: ProdutoEntrada):
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
+            cursor.execute("SELECT id FROM Produto WHERE id = %s", (produto_id,))
+            if cursor.fetchone() is None:
+                raise HTTPException(status_code=404, detail="Produto não encontrado.")
             cursor.execute(
                 """UPDATE Produto
-                   SET nome = ?, estoque = ?, img = ?
-                   OUTPUT INSERTED.id, INSERTED.nome, INSERTED.estoque, INSERTED.img
-                   WHERE id = ?""",
-                produto.nome,
-                produto.estoque,
-                produto.img,
-                produto_id,
+                   SET nome = %s, estoque = %s, img = %s
+                   WHERE id = %s""",
+                (produto.nome, produto.estoque, produto.img, produto_id),
             )
-            linha = cursor.fetchone()
-            if linha is None:
-                raise HTTPException(status_code=404, detail="Produto não encontrado.")
-            return produto_dict(linha)
+            cursor.execute(
+                "SELECT id, nome, estoque, img FROM Produto WHERE id = %s",
+                (produto_id,),
+            )
+            return produto_dict(cursor.fetchone())
     except HTTPException:
         raise
     except Exception as erro:
@@ -94,13 +96,13 @@ def excluir_produto(produto_id: int):
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
-            cursor.execute("DELETE FROM Produto WHERE id = ?", produto_id)
+            cursor.execute("DELETE FROM Produto WHERE id = %s", (produto_id,))
             if cursor.rowcount == 0:
                 raise HTTPException(status_code=404, detail="Produto não encontrado.")
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     except HTTPException:
         raise
-    except pyodbc.IntegrityError as erro:
+    except IntegrityError as erro:
         raise HTTPException(
             status_code=409,
             detail="Não é possível excluir um produto associado a pedidos.",

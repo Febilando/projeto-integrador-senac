@@ -1,25 +1,17 @@
 import os
 
-import pyodbc
+import pymysql
+from pymysql.cursors import DictCursor
 
-
-def criar_string_conexao():
-    partes = [
-        "Driver={ODBC Driver 18 for SQL Server};",
-        f"Server={os.getenv('DB_SERVER', 'localhost')};",
-        f"Database={os.getenv('DB_NAME', 'GerenciadorPedidos')};",
-        "TrustServerCertificate=yes;",
-    ]
-
-    usuario = os.getenv("DB_USER")
-    senha = os.getenv("DB_PASSWORD")
-
-    if usuario and senha:
-        partes.extend([f"UID={usuario};", f"PWD={senha};"])
-    else:
-        partes.append("Trusted_Connection=yes;")
-
-    return "".join(partes)
 
 def obter_conexao():
-    return pyodbc.connect(criar_string_conexao())
+    return pymysql.connect(
+        host=os.getenv("DB_HOST", "localhost"),
+        port=int(os.getenv("DB_PORT", "3306")),
+        user=os.getenv("DB_USER", "gerenciador"),
+        password=os.environ["DB_PASSWORD"],
+        database=os.getenv("DB_NAME", "GerenciadorPedidos"),
+        charset="utf8mb4",
+        cursorclass=DictCursor,
+        autocommit=False,
+    )

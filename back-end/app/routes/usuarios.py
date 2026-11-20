@@ -1,4 +1,4 @@
-import pyodbc
+from pymysql.err import IntegrityError
 from fastapi import APIRouter, HTTPException, Response, status
 
 from app.conexao import conectar_banco
@@ -10,15 +10,15 @@ router = APIRouter(prefix="/usuarios", tags=["Usuários"])
 
 def usuario_dict(linha):
     return {
-        "id": linha.id,
-        "nome": linha.nome,
-        "funcao": linha.funcao,
-        "status": linha.status,
+        "id": linha["id"],
+        "nome": linha["nome"],
+        "funcao": linha["funcao"],
+        "status": linha["status"],
     }
 
 
 def validar_funcao(cursor, funcao_id):
-    cursor.execute("SELECT id FROM funcao WHERE id = ?", funcao_id)
+    cursor.execute("SELECT id FROM funcao WHERE id = %s", (funcao_id,))
     if cursor.fetchone() is None:
         raise HTTPException(status_code=422, detail="A função informada não existe.")
 
@@ -40,8 +40,8 @@ def buscar_usuario(usuario_id: int):
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
-                "SELECT id, nome, funcao, status FROM Usuario WHERE id = ?",
-                usuario_id,
+                "SELECT id, nome, funcao, status FROM Usuario WHERE id = %s",
+                (usuario_id,),
             )
             linha = cursor.fetchone()
             if linha is None:
@@ -60,13 +60,14 @@ def criar_usuario(usuario: UsuarioEntrada):
             cursor = conexao.cursor()
             validar_funcao(cursor, usuario.funcao)
             cursor.execute(
-                     """INSERT INTO Usuario (nome, senha, funcao, status)
-                   OUTPUT INSERTED.id, INSERTED.nome, INSERTED.funcao, INSERTED.status
-                         VALUES (?, ?, ?, ?)""",
-                usuario.nome,
-                     hash_senha(usuario.senha),
-                usuario.funcao,
-                usuario.status,
+                """INSERT INTO Usuario (nome, senha, funcao, status)
+                   VALUES (%s, %s, %s, %s)""",
+                (usuario.nome, hash_senha(usuario.senha), usuario.funcao, usuario.status),
+            )
+            usuario_id = cursor.lastrowid
+            cursor.execute(
+                "SELECT id, nome, funcao, status FROM Usuario WHERE id = %s",
+                (usuario_id,),
             )
             return usuario_dict(cursor.fetchone())
     except HTTPException:
@@ -81,21 +82,20 @@ def atualizar_usuario(usuario_id: int, usuario: UsuarioEntrada):
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             validar_funcao(cursor, usuario.funcao)
+            cursor.execute("SELECT id FROM Usuario WHERE id = %s", (usuario_id,))
+            if cursor.fetchone() is None:
+                raise HTTPException(status_code=404, detail="Usuário não encontrado.")
             cursor.execute(
                 """UPDATE Usuario
-                   SET nome = ?, senha = ?, funcao = ?, status = ?
-                   OUTPUT INSERTED.id, INSERTED.nome, INSERTED.funcao, INSERTED.status
-                   WHERE id = ?""",
-                usuario.nome,
-                hash_senha(usuario.senha),
-                usuario.funcao,
-                usuario.status,
-                usuario_id,
+                   SET nome = %s, senha = %s, funcao = %s, status = %s
+                   WHERE id = %s""",
+                (usuario.nome, hash_senha(usuario.senha), usuario.funcao, usuario.status, usuario_id),
             )
-            linha = cursor.fetchone()
-            if linha is None:
-                raise HTTPException(status_code=404, detail="Usuário não encontrado.")
-            return usuario_dict(linha)
+            cursor.execute(
+                "SELECT id, nome, funcao, status FROM Usuario WHERE id = %s",
+                (usuario_id,),
+            )
+            return usuario_dict(cursor.fetchone())
     except HTTPException:
         raise
     except Exception as erro:
@@ -107,13 +107,13 @@ def excluir_usuario(usuario_id: int):
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
-            cursor.execute("DELETE FROM Usuario WHERE id = ?", usuario_id)
+            cursor.execute("DELETE FROM Usuario WHERE id = %s", (usuario_id,))
             if cursor.rowcount == 0:
                 raise HTTPException(status_code=404, detail="Usuário não encontrado.")
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     except HTTPException:
         raise
-    except pyodbc.IntegrityError as erro:
+    except IntegrityError as erro:
         raise HTTPException(
             status_code=409,
             detail="Não é possível excluir um usuário associado a pedidos.",
