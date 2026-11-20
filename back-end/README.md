@@ -1,43 +1,59 @@
 # GerenciadorPedidosApi
 
 ## Docker
-A melhor forma de iniciar a api é com o Docker, evita configurações adicionais com o sql, dependências, etc:
 
-## Passo a passo:
-Com o Docker Desktop em execução, construa a imagem na pasta `back-end` com esse comando:
+Na pasta `back-end`, crie o arquivo local de configuração e defina senhas próprias nele:
+
+Não se esqueça de definir as váriaveis de ambiente no .env
+(Se ainda não tiver um `.env`, utilize como base o `.env.example` e crie um `.env` para de suas senhas)
+
+Inicie a API e o MySQL:
 ```powershell
-docker build -t gerenciador-pedidos-api .
-```
-Em seguida, execute o container com esse comando:
-```powershell
-docker run --rm -p 8000:8000 `
-	-e "DB_SERVER=1433" `
-	-e "DB_NAME=GerenciadorPedidos" `
-	-e "DB_USER=usuario" `
-	-e "DB_PASSWORD=senha" `
-	gerenciador-pedidos-api
+docker compose up --build
 ```
 
-O SQL Server precisa aceitar conexões TCP/IP e autenticação SQL. A API fica disponível em <http://localhost:8000> e a documentação em <http://localhost:8000/docs>.
+A API fica em <http://localhost:8000>.
 
+Para parar os serviços, use `Ctrl+C` e depois:
 
-Se não quiser utilizar o docker:
-## Instalação
 ```powershell
-cd back-end
+docker compose down
+```
+
+para encerrar os containers.
+
+
+## Execução local
+
+Crie e ative o ambiente virtual e instale as dependências:
+
+```powershell
+cd .\backend\
+```
+
+```powershell
 python -m venv .venv
-.venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-## Execução
+Se ainda não tiver um `.env`, utilize como base o `.env.example` e crie um `.env` para de suas senhas.
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Com o `.env` configurado para utilizar o MySQL, inicie a API localmente:
+
 ```powershell
 uvicorn main:app --reload
 ```
-Documentação: <http://127.0.0.1:8000/docs>
 
-## Rotas iniciais
-- `GET /`
+A api irá utilizar as variáveis `MYSQL_USER`, `MYSQL_PASSWORD` e `MYSQL_DATABASE` do `.env`.
+
+
+## Rotas
+
 - `GET /usuarios` e `GET /usuarios/{id}`
 - `GET /produtos` e `GET /produtos/{id}`
 - `GET /pedidos` e `GET /pedidos/{id}`
