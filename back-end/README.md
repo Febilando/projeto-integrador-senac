@@ -28,7 +28,7 @@ para encerrar os containers.
 Crie e ative o ambiente virtual e instale as dependências:
 
 ```powershell
-cd .\backend\
+cd .\back-end\
 ```
 
 ```powershell
