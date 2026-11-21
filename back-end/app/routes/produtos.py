@@ -1,8 +1,8 @@
 from pymysql.err import IntegrityError
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, HTTPException, Query, Response, status
 
 from app.conexao import conectar_banco
-from app.models.produto import ProdutoEntrada
+from app.models.produto import ProdutoEntrada, ReposicaoEntrada
 
 router = APIRouter(prefix="/produtos", tags=["Produtos"])
 
@@ -24,7 +24,23 @@ def listar_produtos():
             cursor.execute("SELECT id, nome, estoque, img FROM Produto ORDER BY id")
             return [produto_dict(linha) for linha in cursor.fetchall()]
     except Exception as erro:
-        raise HTTPException(status_code=500, detail="Erro ao listar produtos.") from erro
+        raise HTTPException(status_code=500, detail="Erro ao listar produtos.") from erro    
+
+@router.get("/estoque-baixo")
+def listar_estoque_baixo(limite: int = Query(default=10, ge=0)):
+    try:
+        with conectar_banco() as conexao:
+            cursor = conexao.cursor()
+            cursor.execute(
+                "SELECT id, nome, estoque, img FROM Produto "
+                "WHERE estoque <= %s ORDER BY estoque, id",
+                (limite,),
+            )
+            return [produto_dict(linha) for linha in cursor.fetchall()]
+    except Exception as erro:
+        raise HTTPException(
+            status_code=500, detail="Erro ao listar produtos com estoque baixo."
+        ) from erro
 
 
 @router.get("/{produto_id}")
@@ -109,3 +125,24 @@ def excluir_produto(produto_id: int):
         ) from erro
     except Exception as erro:
         raise HTTPException(status_code=500, detail="Erro ao excluir produto.") from erro
+    
+@router.post("/{produto_id}/reposicao")
+def repor_estoque(produto_id: int, reposicao: ReposicaoEntrada):
+    try:
+        with conectar_banco() as conexao:
+            cursor = conexao.cursor()
+            cursor.execute(
+                "UPDATE Produto SET estoque = estoque + %s WHERE id = %s",
+                (reposicao.quantidade, produto_id),
+            )
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=404, detail="Produto não encontrado.")
+            cursor.execute(
+                "SELECT id, nome, estoque, img FROM Produto WHERE id = %s",
+                (produto_id,),
+            )
+            return produto_dict(cursor.fetchone())
+    except HTTPException:
+        raise
+    except Exception as erro:
+        raise HTTPException(status_code=500, detail="Erro ao repor estoque.") from erro
