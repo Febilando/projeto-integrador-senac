@@ -5,9 +5,150 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produtos</title>
     <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/produtos.css">
     <script src="header/header.js" defer></script>
 </head>
 <body>
     <header></header>
+
+    <main class="products-main">
+        <section class="products-heading">
+            <div>
+                <p class="products-eyebrow">Catálogo</p>
+                <h1>Produtos</h1>
+                <p class="products-description">Consulte e acompanhe os produtos cadastrados.</p>
+            </div>
+            <button
+                class="products-add-button"
+                type="button"
+                disabled
+            >
+                Novo produto
+            </button>
+        </section>
+
+        <div class="products-notice" role="status">
+            <span class="products-notice-icon" aria-hidden="true">i</span>
+            <p><strong>Dados demonstrativos:</strong> os nove produtos abaixo são exemplos estáticos escritos no HTML.</p>
+        </div>
+
+        <section class="table-card">
+            <div class="table-card-heading">
+                <div>
+                    <h2>Catálogo de produtos</h2>
+                    <p>Produtos e níveis de estoque</p>
+                </div>
+                <span class="table-count">9 produtos</span>
+            </div>
+
+            <div class="table-toolbar">
+                <div class="table-toolbar-actions">
+                    <div class="table-sort-controls" role="group">
+                        <span>Ordenar:</span>
+                        <button type="button">Alfabética ↑</button>
+                        <button type="button">
+                            Estoque ↑
+                        </button>
+                    </div>
+                    <div class="table-stock-filter">
+                        <span>Estoque máximo</span>
+                        <input
+                            id="max-stock"
+                            class="input-text"
+                            type="number"
+                            min="0"
+                            placeholder="Máx."
+                        >
+                    </div>
+                </div>
+                <input
+                    id="products-search"
+                    class="input-text table-search"
+                    type="search"
+                    placeholder="Pesquisar produtos..."
+                >
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Imagem</th>
+                            <th scope="col">ID</th>
+                            <th scope="col">Produto</th>
+                            <th scope="col">Estoque</th>
+                            <th scope="col">Disponibilidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
+                            <td class="table-id">1001</td>
+                            <td class="table-name">Caderno universitário 10 matérias</td>
+                            <td>42 unidades</td>
+                            <td><span class="table-status table-status--available">Em estoque</span></td>
+                        </tr>
+                        <tr>
+                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
+                            <td class="table-id">1002</td>
+                            <td class="table-name">Caneta esferográfica azul</td>
+                            <td>120 unidades</td>
+                            <td><span class="table-status table-status--available">Em estoque</span></td>
+                        </tr>
+                        <tr>
+                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
+                            <td class="table-id">1003</td>
+                            <td class="table-name">Mochila urbana</td>
+                            <td>8 unidades</td>
+                            <td><span class="table-status table-status--low">Estoque baixo</span></td>
+                        </tr>
+                        <tr>
+                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
+                            <td class="table-id">1004</td>
+                            <td class="table-name">Garrafa térmica inox</td>
+                            <td>0 unidades</td>
+                            <td><span class="table-status table-status--unavailable">Sem estoque</span></td>
+                        </tr>
+                        <tr>
+                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
+                            <td class="table-id">1005</td>
+                            <td class="table-name">Fone de ouvido Bluetooth</td>
+                            <td>16 unidades</td>
+                            <td><span class="table-status table-status--available">Em estoque</span></td>
+                        </tr>
+                        <tr>
+                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
+                            <td class="table-id">1006</td>
+                            <td class="table-name">Mouse sem fio</td>
+                            <td>6 unidades</td>
+                            <td><span class="table-status table-status--low">Estoque baixo</span></td>
+                        </tr>
+                        <tr>
+                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
+                            <td class="table-id">1007</td>
+                            <td class="table-name">Teclado compacto</td>
+                            <td>23 unidades</td>
+                            <td><span class="table-status table-status--available">Em estoque</span></td>
+                        </tr>
+                        <tr>
+                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
+                            <td class="table-id">1008</td>
+                            <td class="table-name">Luminária de mesa LED</td>
+                            <td>9 unidades</td>
+                            <td><span class="table-status table-status--low">Estoque baixo</span></td>
+                        </tr>
+                        <tr>
+                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
+                            <td class="table-id">1009</td>
+                            <td class="table-name">Agenda permanente</td>
+                            <td>38 unidades</td>
+                            <td><span class="table-status table-status--available">Em estoque</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 </body>
 </html>

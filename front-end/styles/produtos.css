@@ -1,0 +1,82 @@
+body {
+    background: #f5f7fa;
+    color: #1f2937;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.products-main {
+    width: min(100%, 1280px);
+    margin: 0 auto;
+    padding: 40px 32px 64px;
+}
+
+.products-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.products-eyebrow {
+    margin-bottom: 6px;
+    color: #5b7ba5;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.products-add-button:disabled,
+.products-add-button:disabled:hover {
+    color: #667085;
+    background: #e4e7ec;
+    cursor: not-allowed;
+}
+
+.products-notice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    border: 1px solid #d5e4f4;
+    border-radius: 8px;
+    color: #344054;
+    background: #f1f7fd;
+    font-size: 14px;
+}
+
+.products-notice p {
+    color: #344054;
+}
+
+.products-notice-icon {
+    display: grid;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: #5b9bda;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+@media (max-width: 640px) {
+    .products-main {
+        padding: 28px 16px 40px;
+    }
+
+    .products-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .products-heading h1 {
+        font-size: 24px;
+    }
+
+}
