@@ -1,4 +1,16 @@
 /* CSS padrão para os elementos das páginas */
+h1 {
+    margin-bottom: 6px;
+    color: #234D98;
+    font-size: 28px;
+    line-height: 1.25;
+}
+
+p {
+    color: #667085;
+    font-size: 14px;
+}
+
 .input-text {
     width: 100%;
     min-height: 46px;
