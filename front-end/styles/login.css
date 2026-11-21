@@ -1,0 +1,117 @@
+.login-header {
+    height: 76px;
+    border-bottom: 1px solid #e4e7ec;
+    background: #fff;
+}
+
+.login-header nav {
+    height: 100%;
+}
+
+.login-main {
+    display: grid;
+    min-height: calc(100vh - 76px);
+    padding: 40px 20px;
+    place-items: center;
+}
+
+.login-card {
+    width: min(100%, 420px);
+    padding: 40px;
+    border: 1px solid #e8ebf0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 12px 32px rgb(31 41 55 / 7%);
+}
+
+.login-heading {
+    margin-bottom: 32px;
+}
+
+.login-accent {
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin-bottom: 18px;
+    border-radius: 2px;
+    background: #f5a623;
+}
+
+.login-heading h1 {
+    margin-bottom: 8px;
+    color: #234d98;
+    font-size: 26px;
+    line-height: 1.25;
+}
+
+.login-heading p {
+    color: #667085;
+    font-size: 15px;
+}
+
+.login-form {
+    display: grid;
+    gap: 20px;
+}
+
+.form-field {
+    display: grid;
+    gap: 8px;
+}
+
+.form-field label {
+    color: #344054;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: -4px;
+    font-size: 13px;
+}
+
+.remember-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #475467;
+}
+
+.remember-option input {
+    width: 16px;
+    height: 16px;
+    accent-color: #234d98;
+}
+
+.forgot-password {
+    color: #234d98;
+    font-weight: 600;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.login-form button {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.forgot-password:focus-visible {
+    outline: 3px solid rgb(91 155 218 / 35%);
+    outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 32px 24px;
+    }
+
+    .login-heading h1 {
+        font-size: 24px;
+    }
+}

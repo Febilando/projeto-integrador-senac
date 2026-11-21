@@ -5,9 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="../styles/reset.css">
-    <script src="header/header.js" defer></script>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="header/header.css">
+    <link rel="stylesheet" href="../styles/login.css">
 </head>
 <body>
-    <header></header>
+    <header class="login-header">
+        <nav aria-label="Navegação principal">
+            <div class="marca">
+                <a href="login.html" aria-label="Empresa - Login">
+                    <svg viewBox="0 0 36 36" aria-hidden="true">
+                        <circle cx="18" cy="18" r="15" fill="#5b9bda"/>
+                        <circle cx="18" cy="18" r="9" fill="#fff"/>
+                        <circle cx="18" cy="18" r="4" fill="#f5a623"/>
+                    </svg>
+                    <span>Empresa</span>
+                </a>
+                <span class="separador" aria-hidden="true"></span>
+                <strong>Login</strong>
+            </div>
+        </nav>
+    </header>
+
+    <main class="login-main">
+        <section class="login-card" aria-labelledby="login-title">
+            <div class="login-heading">
+                <span class="login-accent" aria-hidden="true"></span>
+                <h1 id="login-title">Bem-vindo de volta</h1>
+                <p>Acesse sua conta para continuar.</p>
+            </div>
+
+            <form class="login-form">
+                <div class="form-field">
+                    <label for="usuario-id">ID</label>
+                    <input
+                        id="usuario-id"
+                        name="id"
+                        type="text"
+                        class="input-text"
+                        placeholder="Digite seu ID"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="senha">Senha</label>
+                    <input
+                        id="senha"
+                        name="senha"
+                        type="password"
+                        class="input-text"
+                        placeholder="Digite sua senha"
+                        required
+                    >
+                </div>
+
+                <div class="login-options">
+                    <label class="remember-option" for="lembrar">
+                        <input id="lembrar" name="lembrar" type="checkbox">
+                        <span>Manter conectado</span>
+                    </label>
+                    <a href="#" class="forgot-password">Esqueceu a senha?</a>
+                </div>
+
+                <button type="button">Entrar</button>
+            </form>
+        </section>
+    </main>
 </body>
 </html>
