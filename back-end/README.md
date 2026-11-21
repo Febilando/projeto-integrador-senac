@@ -54,7 +54,8 @@ A api irá utilizar as variáveis `MYSQL_USER`, `MYSQL_PASSWORD` e `MYSQL_DATABA
 
 ## Rotas
 
-- `GET /usuarios` e `GET /usuarios/{id}`
-- `GET /produtos` e `GET /produtos/{id}`
-- `GET /pedidos` e `GET /pedidos/{id}`
-
+- `GET /usuarios`, `GET /usuarios/{id}`, `POST /usuarios`, `PUT /usuarios/{id}` e `DELETE /usuarios/{id}`
+- `GET /produtos`, `GET /produtos/{id}`, `POST /produtos`, `PUT /produtos/{id}` e `DELETE /produtos/{id}`
+- `GET /produtos/estoque-baixo?limite=10` (produtos com estoque menor ou igual ao limite)
+- `POST /produtos/{id}/reposicao` (soma a quantidade informada ao estoque)
+- `GET /pedidos`, `GET /pedidos/{id}`, `POST /pedidos`, `PUT /pedidos/{id}` e `DELETE /pedidos/{id}`
