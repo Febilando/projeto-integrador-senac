@@ -51,3 +51,198 @@ button {
 button:hover {
     background: #1D417F;
 }
+
+/* === Estilos para padronizar as tabelas de usuários, produtos, etc === */
+.table-card {
+    overflow: hidden;
+    border: 1px solid #E4E7EC;
+    border-radius: 12px;
+    background: #FFFFFF;
+    box-shadow: 0 2px 8px rgb(31 41 55 / 4%);
+}
+
+.table-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 24px;
+}
+
+.table-card-heading h2 {
+    margin-bottom: 4px;
+    color: #1F2937;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.table-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px;
+}
+
+.table-toolbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+.table-sort-controls,
+.table-stock-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.table-sort-controls > span,
+.table-stock-filter > span {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.table-sort-controls button {
+    min-height: 38px;
+    padding: 0 12px;
+    border: 1px solid #D0D5DD;
+    color: #344054;
+    background: #FFFFFF;
+    font-size: 13px;
+}
+
+.table-sort-controls button:hover {
+    background: #F9FAFB;
+}
+
+.table-search {
+    flex: 1 1 220px;
+    max-width: 320px;
+}
+
+.table-stock-filter .input-text {
+    width: 96px;
+    min-height: 38px;
+    padding: 0 10px;
+}
+
+.table-count {
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: #667085;
+    background: #F2F4F7;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    border-top: 1px solid #EAECF0;
+}
+
+.data-table {
+    width: 100%;
+    min-width: 560px;
+    text-align: left;
+}
+
+.data-table th {
+    padding: 12px 24px;
+    color: #667085;
+    background: #F9FAFB;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.data-table td {
+    padding: 15px 24px;
+    border-top: 1px solid #F2F4F7;
+    color: #344054;
+    font-size: 14px;
+}
+
+.table-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: #F2F4F7;
+    object-fit: cover;
+}
+
+.table-id {
+    color: #667085;
+    font-variant-numeric: tabular-nums;
+}
+
+.data-table td.table-name {
+    color: #1F2937;
+    font-weight: 600;
+}
+
+.table-status {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.table-status--available {
+    color: #067647;
+    background: #ECFDF3;
+}
+
+.table-status--low {
+    color: #B54708;
+    background: #FFF6ED;
+}
+
+.table-status--unavailable {
+    color: #B42318;
+    background: #FEF3F2;
+}
+
+@media (max-width: 640px) {
+    .table-card-heading {
+        padding: 18px 16px;
+    }
+
+    .table-toolbar {
+        justify-content: flex-start;
+        padding: 12px 16px;
+    }
+
+    .table-search {
+        flex-basis: 100%;
+        max-width: none;
+    }
+
+    .table-toolbar-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .table-sort-controls {
+        flex-wrap: wrap;
+    }
+
+    .table-stock-filter {
+        flex: 1 1 100%;
+        justify-content: space-between;
+    }
+
+    .data-table th {
+        padding: 12px 16px;
+    }
+
+    .data-table td {
+        padding: 14px 16px;
+    }
+}
