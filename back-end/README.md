@@ -18,6 +18,9 @@ Documentação interativa: <http://localhost:8000/docs>.
 O arquivo `.env` também pode configurar `CORS_ORIGINS` (origens separadas por vírgula),
 `CORS_ALLOW_CREDENTIALS` e `LOW_STOCK_LIMIT`. O valor padrão de estoque baixo é
 centralizado na configuração da aplicação.
+Para autenticação, defina `AUTH_SESSION_SECRET` com uma chave aleatória de pelo menos
+32 caracteres e mantenha `SESSION_COOKIE_SECURE=false` somente no desenvolvimento local.
+Em produção, use HTTPS e configure `SESSION_COOKIE_SECURE=true`.
 
 Para parar os serviços, use `Ctrl+C` e depois:
 
@@ -26,6 +29,16 @@ docker compose down
 ```
 
 para encerrar os containers.
+
+## Primeiro administrador
+
+Ao iniciar, a API cria automaticamente um administrador se ainda não
+existir nenhum. O ID de login é `100`; defina a senha inicial no `.env`. Solução para contexto acadêmico, sabemos que não é segura.
+Acesse <http://localhost:5500/pages/login.html> com ID `100` e a senha configurada.
+
+As rotas de Produtos e Usuários exigem sessão. Leitura de Produtos exige usuário
+ativo; criação, edição, reposição e exclusão exigem perfil `admin`. Vendedores
+autenticados podem consultar e operar somente os próprios pedidos.
 
 
 ## Execução local

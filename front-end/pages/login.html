@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="header/header.css">
     <link rel="stylesheet" href="../styles/login.css">
+    <script type="module" src="../assets/js/login.js"></script>
 </head>
 <body>
     <header>
@@ -35,13 +36,17 @@
                 <p>Acesse sua conta para continuar.</p>
             </div>
 
-            <form class="login-form">
+            <form class="login-form" id="login-form">
                 <div class="form-field">
                     <label for="usuario-id">ID</label>
                     <input
                         id="usuario-id"
                         name="id"
-                        type="text"
+                        type="number"
+                        min="1"
+                        step="1"
+                        inputmode="numeric"
+                        autocomplete="username"
                         class="input-text"
                         placeholder="Digite seu ID"
                         required
@@ -54,6 +59,7 @@
                         id="senha"
                         name="senha"
                         type="password"
+                        autocomplete="current-password"
                         class="input-text"
                         placeholder="Digite sua senha"
                         required
@@ -65,10 +71,11 @@
                         <input id="lembrar" name="lembrar" type="checkbox">
                         <span>Manter conectado</span>
                     </label>
-                    <a href="#" class="forgot-password">Esqueceu a senha?</a>
+                    <span class="forgot-password-note">Entre em contato com o administrador para recuperar o acesso.</span>
                 </div>
 
-                <button type="button">Entrar</button>
+                <p class="login-feedback" id="login-feedback" role="alert" aria-live="polite"></p>
+                <button id="login-submit" type="submit">Entrar</button>
             </form>
         </section>
     </main>

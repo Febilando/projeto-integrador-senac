@@ -1,11 +1,16 @@
 from pymysql.err import IntegrityError
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
+from app.auth import require_admin
 from app.conexao import conectar_banco
 from app.models.usuario import UsuarioEntrada
 from app.security import hash_senha
 
-router = APIRouter(prefix="/usuarios", tags=["Usuários"])
+router = APIRouter(
+    prefix="/usuarios",
+    tags=["Usuários"],
+    dependencies=[Depends(require_admin)],
+)
 
 
 def usuario_dict(linha):

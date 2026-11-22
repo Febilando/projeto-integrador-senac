@@ -107,6 +107,7 @@ a {
 .main-area {
     flex: 1;
     padding: 24px 32px;
+    margin-left: var(--sidebar-width);
 }
 
 /* Cabeçalho Topo */
@@ -432,12 +433,6 @@ a {
 }
 
 @media (max-width: 768px) {
-    .sidebar {
-        position: fixed;
-        left: -100%;
-        z-index: 100;
-    }
-    
     .payment-item {
         grid-template-columns: 30px 70px 1fr 45px;
     }
