@@ -90,6 +90,37 @@ def validar_referencias(cursor, pedido):
         raise HTTPException(status_code=422, detail="Um ou mais produtos não existem.")
 
 
+def descontar_estoque(cursor, produtos, quantidades):
+    placeholders = ", ".join("%s" for _ in produtos)
+    cursor.execute(
+        f"""SELECT id, nome, estoque FROM Produto
+            WHERE id IN ({placeholders}) ORDER BY id FOR UPDATE""",
+        tuple(produtos),
+    )
+    produtos_encontrados = {
+        produto["id"]: produto for produto in cursor.fetchall()
+    }
+    if produtos_encontrados.keys() != set(produtos):
+        raise HTTPException(status_code=422, detail="Um ou mais produtos não existem.")
+
+    for produto_id, quantidade in zip(produtos, quantidades):
+        produto = produtos_encontrados[produto_id]
+        if produto["estoque"] < quantidade:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=(
+                    f"Estoque insuficiente para o produto '{produto['nome']}'. "
+                    f"Disponível: {produto['estoque']}; solicitado: {quantidade}."
+                ),
+            )
+
+    for produto_id, quantidade in zip(produtos, quantidades):
+        cursor.execute(
+            "UPDATE Produto SET estoque = estoque - %s WHERE id = %s",
+            (quantidade, produto_id),
+        )
+
+
 def inserir_produtos(cursor, pedido_id, produtos, quantidades):
     cursor.executemany(
         """INSERT INTO ProdutosPedido (pedidoId, produtoId, quantidade)
@@ -156,6 +187,7 @@ def criar_pedido(
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             validar_referencias(cursor, pedido)
+            descontar_estoque(cursor, pedido.produtos, quantidades)
             cursor.execute(
                 "INSERT INTO Pedido (pagamento, vendedorId) VALUES (%s, %s)",
                 (pedido.pagamento, pedido.vendedorId),
