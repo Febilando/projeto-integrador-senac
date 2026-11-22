@@ -6,6 +6,7 @@ MINIMUM_RESTOCK_QUANTITY = 1
 MAXIMUM_PRODUCT_STOCK = 2_147_483_647
 MAXIMUM_PRODUCT_NAME_LENGTH = 150
 MAXIMUM_PRODUCT_IMAGE_LENGTH = 500
+MAXIMUM_PRODUCT_BARCODE_LENGTH = 100
 
 
 class ProdutoEntrada(BaseModel):
@@ -27,11 +28,26 @@ class ProdutoEntrada(BaseModel):
         description="URL ou caminho da imagem do produto.",
         examples=["/assets/caderno.jpg"],
     )
+    cod_barras: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=MAXIMUM_PRODUCT_BARCODE_LENGTH,
+        description="Código de barras usado para localizar o produto.",
+        examples=["7891234567890"],
+    )
 
     @field_validator("nome", mode="before")
     @classmethod
     def normalizar_nome(cls, valor):
         return valor.strip() if isinstance(valor, str) else valor
+
+    @field_validator("cod_barras", mode="before")
+    @classmethod
+    def normalizar_codigo_barras(cls, valor):
+        if not isinstance(valor, str):
+            return valor
+        codigo = valor.strip()
+        return codigo or None
 
 
 class ProdutoResposta(BaseModel):
@@ -41,6 +57,10 @@ class ProdutoResposta(BaseModel):
     img: str | None = Field(
         default=None,
         description="URL ou caminho da imagem do produto.",
+    )
+    cod_barras: str | None = Field(
+        default=None,
+        description="Código de barras do produto.",
     )
 
 class ReposicaoEntrada(BaseModel):

@@ -26,7 +26,9 @@ CREATE TABLE Produto (
     nome VARCHAR(150) NOT NULL,
     estoque INT NOT NULL
         CHECK (estoque >= 0),
-    img VARCHAR(500) NULL
+    img VARCHAR(500) NULL,
+    cod_barras VARCHAR(100) NULL,
+    CONSTRAINT UQ_Produto_cod_barras UNIQUE (cod_barras)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
