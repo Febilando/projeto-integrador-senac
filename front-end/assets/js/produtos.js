@@ -119,6 +119,7 @@ function createProductRow(product) {
         imageCell,
         createCell(String(product.id), "table-id"),
         createCell(product.nome, "table-name"),
+        createCell(product.cod_barras || "—"),
         createCell(formatPrice(product.preco)),
         createCell(`${product.estoque} unidades`),
         statusCell,
@@ -131,7 +132,7 @@ function createProductRow(product) {
 function showTableMessage(message) {
     const row = document.createElement("tr");
     const cell = createCell(message);
-    cell.colSpan = 7;
+    cell.colSpan = 8;
     cell.className = "table-message";
     row.append(cell);
     rowsElement.replaceChildren(row);
