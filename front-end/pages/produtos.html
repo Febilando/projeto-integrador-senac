@@ -74,13 +74,14 @@
                             <th scope="col">Imagem</th>
                             <th scope="col">ID</th>
                             <th scope="col">Produto</th>
+                            <th scope="col">Preço</th>
                             <th scope="col">Estoque</th>
                             <th scope="col">Disponibilidade</th>
                             <th scope="col">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="products-rows" aria-busy="true">
-                        <tr><td class="table-message" colspan="6">Carregando produtos...</td></tr>
+                        <tr><td class="table-message" colspan="7">Carregando produtos...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -98,8 +99,14 @@
             <label for="product-name">Nome</label>
             <input class="input-text" id="product-name" name="nome" type="text" required>
 
+            <label for="product-barcode">Código de barras (opcional)</label>
+            <input class="input-text" id="product-barcode" name="cod_barras" type="text" maxlength="100">
+
             <label for="product-stock">Estoque inicial</label>
             <input class="input-text" id="product-stock" name="estoque" type="number" min="0" step="1" required>
+
+            <label for="product-price">Preço unitário</label>
+            <input class="input-text" id="product-price" name="preco" type="number" min="0" max="99999999.99" step="0.01" required>
 
             <label for="product-image">Imagem (URL ou caminho, opcional)</label>
             <input class="input-text" id="product-image" name="img" type="text">

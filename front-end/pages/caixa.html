@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../styles/reset.css">
     <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="../styles/caixa.css">
-    <script src="../scripts/caixa.js" defer></script>
+    <script type="module" src="../scripts/caixa.js"></script>
 </head>
 <body>
     <header></header>
@@ -20,7 +20,7 @@
 
         <div class="order-notice">
             <span class="order-notice-icon" aria-hidden="true">i</span>
-            <p><strong>Demonstração:</strong> os produtos são exemplos escritos diretamente no HTML.</p>
+            <p><strong>Atenção:</strong> produtos e preços vêm da API. A finalização do pedido ainda não está integrada.</p>
         </div>
 
         <div class="order-layout">
@@ -30,19 +30,19 @@
                         <h2>Produtos</h2>
                         <p>Selecione os itens para este pedido.</p>
                     </div>
-                    <span class="table-count">9 produtos</span>
+                    <span class="table-count" id="products-count">0 adicionados</span>
                 </div>
 
                 <div class="table-toolbar order-toolbar">
-                    <div class="order-search">
-                        <span>Buscar pelo ID</span>
+                    <div class="order-search" id="order-search">
+                        <span>Buscar por nome ou código de barras</span>
                         <input
-                            id="product-id-search"
+                            id="product-search"
                             class="input-text"
                             type="search"
-                            inputmode="numeric"
-                            placeholder="Ex.: 1001"
+                            placeholder="Digite o nome ou código de barras"
                         >
+                        <div class="order-search-results" id="product-search-results" hidden></div>
                     </div>
                 </div>
 
@@ -58,69 +58,7 @@
                             </tr>
                         </thead>
                         <tbody id="products-list">
-                            <tr data-product-id="1001" data-price="24.90">
-                                <td class="table-id">1001</td>
-                                <td class="table-name">Caderno universitário 10 matérias</td>
-                                <td>42 unidades</td>
-                                <td>R$ 24,90</td>
-                                <td><input class="input-text order-quantity" type="number" min="0" max="42" value="0" step="1" title="Quantidade de Caderno universitário 10 matérias"></td>
-                            </tr>
-                            <tr data-product-id="1002" data-price="2.50">
-                                <td class="table-id">1002</td>
-                                <td class="table-name">Caneta esferográfica azul</td>
-                                <td>120 unidades</td>
-                                <td>R$ 2,50</td>
-                                <td><input class="input-text order-quantity" type="number" min="0" max="120" value="0" step="1" title="Quantidade de Caneta esferográfica azul"></td>
-                            </tr>
-                            <tr data-product-id="1003" data-price="89.90">
-                                <td class="table-id">1003</td>
-                                <td class="table-name">Mochila urbana</td>
-                                <td>8 unidades</td>
-                                <td>R$ 89,90</td>
-                                <td><input class="input-text order-quantity" type="number" min="0" max="8" value="0" step="1" title="Quantidade de Mochila urbana"></td>
-                            </tr>
-                            <tr data-product-id="1004" data-price="49.90">
-                                <td class="table-id">1004</td>
-                                <td class="table-name">Garrafa térmica inox</td>
-                                <td>0 unidades</td>
-                                <td>R$ 49,90</td>
-                                <td><input class="input-text order-quantity" type="number" min="0" max="0" value="0" step="1" disabled title="Produto sem estoque"></td>
-                            </tr>
-                            <tr data-product-id="1005" data-price="129.90">
-                                <td class="table-id">1005</td>
-                                <td class="table-name">Fone de ouvido Bluetooth</td>
-                                <td>16 unidades</td>
-                                <td>R$ 129,90</td>
-                                <td><input class="input-text order-quantity" type="number" min="0" max="16" value="0" step="1" title="Quantidade de Fone de ouvido Bluetooth"></td>
-                            </tr>
-                            <tr data-product-id="1006" data-price="59.90">
-                                <td class="table-id">1006</td>
-                                <td class="table-name">Mouse sem fio</td>
-                                <td>6 unidades</td>
-                                <td>R$ 59,90</td>
-                                <td><input class="input-text order-quantity" type="number" min="0" max="6" value="0" step="1" title="Quantidade de Mouse sem fio"></td>
-                            </tr>
-                            <tr data-product-id="1007" data-price="99.90">
-                                <td class="table-id">1007</td>
-                                <td class="table-name">Teclado compacto</td>
-                                <td>23 unidades</td>
-                                <td>R$ 99,90</td>
-                                <td><input class="input-text order-quantity" type="number" min="0" max="23" value="0" step="1" title="Quantidade de Teclado compacto"></td>
-                            </tr>
-                            <tr data-product-id="1008" data-price="44.90">
-                                <td class="table-id">1008</td>
-                                <td class="table-name">Luminária de mesa LED</td>
-                                <td>9 unidades</td>
-                                <td>R$ 44,90</td>
-                                <td><input class="input-text order-quantity" type="number" min="0" max="9" value="0" step="1" title="Quantidade de Luminária de mesa LED"></td>
-                            </tr>
-                            <tr data-product-id="1009" data-price="19.90">
-                                <td class="table-id">1009</td>
-                                <td class="table-name">Agenda permanente</td>
-                                <td>38 unidades</td>
-                                <td>R$ 19,90</td>
-                                <td><input class="input-text order-quantity" type="number" min="0" max="38" value="0" step="1" title="Quantidade de Agenda permanente"></td>
-                            </tr>
+                            <tr><td class="table-message" colspan="5">Nenhum produto adicionado.</td></tr>
                         </tbody>
                     </table>
                 </div>

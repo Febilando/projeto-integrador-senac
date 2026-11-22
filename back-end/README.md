@@ -61,14 +61,13 @@ durante o desenvolvimento, abra outro terminal na pasta `front-end` e execute
 ## Rotas
 
 - `GET /usuarios`, `GET /usuarios/{id}`, `POST /usuarios`, `PUT /usuarios/{id}` e `DELETE /usuarios/{id}`
-- `GET /produtos`, `GET /produtos/{id}`, `POST /produtos`, `PUT /produtos/{id}` e `DELETE /produtos/{id}`
+- `GET /produtos?busca=<termo>` (busca por código de barras exato ou parte do nome; sem termo, lista todos)
+- `GET /produtos/{id}`, `POST /produtos`, `PUT /produtos/{id}` e `DELETE /produtos/{id}`
 - `GET /produtos/codigo-barras/{cod_barras}` (busca pelo código de barras)
 - `GET /produtos/estoque-baixo?limite=<valor>` (produtos com estoque menor ou igual ao limite; padrão configurável por `LOW_STOCK_LIMIT`)
 - `POST /produtos/{id}/reposicao` (soma a quantidade informada ao estoque)
 - `GET /pedidos`, `GET /pedidos/{id}`, `POST /pedidos`, `PUT /pedidos/{id}` e `DELETE /pedidos/{id}`
 
-grupo:
-Para não perdermos os bancos já existentes, o script será aplicado para modificar o banco `banco de dados/migracao_cod_barras.sql`.
-(podemos apagar esse script ao final do projeto)
+O código de barras é opcional e único quando informado. A API o inclui nas respostas de produto; o frontend decide se deve exibi-lo. O campo `preco` é obrigatório nas respostas e usa `DECIMAL(10, 2)`; em novos cadastros, se omitido, começa em `0.00`.
 
-O código de barras é opcional e único quando informado. A API o inclui nas respostas de produto; o frontend decide se deve exibi-lo.
+Na inicialização, a API verifica e aplica automaticamente as alterações de `cod_barras` e `preco` sem apagar bancos existentes. Os scripts `banco de dados/migracao_cod_barras.sql` e `banco de dados/migracao_preco.sql` podem ser usados separadamente em instalações manuais, mas não devem ser executados novamente depois de a coluna correspondente já existir. Esses scripts são temporários e devem ser removidos ao final do projeto.

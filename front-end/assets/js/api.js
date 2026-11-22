@@ -2,9 +2,11 @@ const API_BASE_URL = "http://127.0.0.1:8000";
 const REQUEST_TIMEOUT_MS = 10000;
 const API_FIELD_LABELS = {
     nome: "Nome",
+    cod_barras: "Código de barras",
     estoque: "Estoque",
     img: "Imagem",
     quantidade: "Quantidade",
+    preco: "Preço",
 };
 
 function formatValidationErrors(errors) {

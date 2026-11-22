@@ -64,6 +64,9 @@ body {
 
 .order-products {
     min-width: 0;
+    position: relative;
+    z-index: 2;
+    overflow: visible;
 }
 
 .order-toolbar {
@@ -71,21 +74,100 @@ body {
 }
 
 .order-search {
+    position: relative;
+    z-index: 3;
     display: flex;
-    width: min(100%, 360px);
-    align-items: center;
-    gap: 12px;
+    width: min(100%, 520px);
+    flex-direction: column;
+    gap: 8px;
 }
 
 .order-search > span {
     color: #667085;
     font-size: 13px;
     font-weight: 600;
-    white-space: nowrap;
 }
 
 .order-search .input-text {
     min-width: 0;
+}
+
+.order-search-results {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    left: 0;
+    z-index: 10;
+    max-height: min(360px, calc(100vh - 220px));
+    overflow-y: auto;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(31 41 55 / 16%);
+}
+
+.order-search-result {
+    display: flex;
+    width: 100%;
+    min-height: 64px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #eaecf0;
+    border-radius: 0;
+    color: #344054;
+    background: #fff;
+    text-align: left;
+}
+
+.order-search-result:last-child {
+    border-bottom: 0;
+}
+
+.order-search-result:hover {
+    background: #f9fafb;
+}
+
+.order-search-result:disabled,
+.order-search-result:disabled:hover {
+    color: #98a2b3;
+    background: #f9fafb;
+    cursor: not-allowed;
+}
+
+.order-search-result-details {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+}
+
+.order-search-result-name {
+    overflow: hidden;
+    color: inherit;
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.order-search-result-description {
+    color: #667085;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.order-search-result-price {
+    flex: 0 0 auto;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.order-search-message {
+    margin: 0;
+    padding: 16px;
+    color: #667085;
+    font-size: 13px;
 }
 
 .order-products-table {
