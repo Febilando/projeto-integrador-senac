@@ -1,6 +1,7 @@
 from pymysql.err import IntegrityError
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 
+from app.auth import ADMIN_ROLE, get_current_user
 from app.conexao import conectar_banco
 from app.models.pedido import PedidoEntrada
 
@@ -22,16 +23,22 @@ def validar_produtos(produtos):
         raise HTTPException(status_code=422, detail="A lista de produtos contém IDs repetidos.")
 
 
-def buscar_pedidos(cursor, pedido_id=None):
+def buscar_pedidos(cursor, pedido_id=None, vendedor_id=None):
     consulta = """SELECT p.id, p.horario, p.pagamento, p.vendedorId, pp.produtoId
                   FROM Pedido AS p
                   LEFT JOIN ProdutosPedido AS pp ON pp.pedidoId = p.id"""
-    parametros = ()
+    filtros = []
+    parametros = []
     if pedido_id is not None:
-        consulta += " WHERE p.id = %s"
-        parametros = (pedido_id,)
+        filtros.append("p.id = %s")
+        parametros.append(pedido_id)
+    if vendedor_id is not None:
+        filtros.append("p.vendedorId = %s")
+        parametros.append(vendedor_id)
+    if filtros:
+        consulta += " WHERE " + " AND ".join(filtros)
     consulta += " ORDER BY p.id DESC, pp.produtoId"
-    cursor.execute(consulta, parametros)
+    cursor.execute(consulta, tuple(parametros))
 
     pedidos = {}
     for linha in cursor.fetchall():
@@ -64,20 +71,40 @@ def inserir_produtos(cursor, pedido_id, produtos):
     )
 
 
+def validar_acesso_vendedor(user, vendedor_id):
+    if user["funcao"].strip().lower() != ADMIN_ROLE and user["id"] != vendedor_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Vendedores só podem operar pedidos próprios.",
+        )
+
+
 @router.get("")
-def listar_pedidos():
+def listar_pedidos(user: dict = Depends(get_current_user)):
     try:
         with conectar_banco() as conexao:
-            return buscar_pedidos(conexao.cursor())
+            vendedor_id = (
+                None
+                if user["funcao"].strip().lower() == ADMIN_ROLE
+                else user["id"]
+            )
+            return buscar_pedidos(conexao.cursor(), vendedor_id=vendedor_id)
     except Exception as erro:
         raise HTTPException(status_code=500, detail="Erro ao listar pedidos.") from erro
 
 
 @router.get("/{pedido_id}")
-def buscar_pedido(pedido_id: int):
+def buscar_pedido(pedido_id: int, user: dict = Depends(get_current_user)):
     try:
         with conectar_banco() as conexao:
-            pedidos = buscar_pedidos(conexao.cursor(), pedido_id)
+            vendedor_id = (
+                None
+                if user["funcao"].strip().lower() == ADMIN_ROLE
+                else user["id"]
+            )
+            pedidos = buscar_pedidos(
+                conexao.cursor(), pedido_id, vendedor_id=vendedor_id
+            )
             if not pedidos:
                 raise HTTPException(status_code=404, detail="Pedido não encontrado.")
             return pedidos[0]
@@ -88,7 +115,11 @@ def buscar_pedido(pedido_id: int):
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def criar_pedido(pedido: PedidoEntrada):
+def criar_pedido(
+    pedido: PedidoEntrada,
+    user: dict = Depends(get_current_user),
+):
+    validar_acesso_vendedor(user, pedido.vendedorId)
     validar_produtos(pedido.produtos)
     try:
         with conectar_banco() as conexao:
@@ -113,15 +144,24 @@ def criar_pedido(pedido: PedidoEntrada):
 
 
 @router.put("/{pedido_id}")
-def atualizar_pedido(pedido_id: int, pedido: PedidoEntrada):
+def atualizar_pedido(
+    pedido_id: int,
+    pedido: PedidoEntrada,
+    user: dict = Depends(get_current_user),
+):
+    validar_acesso_vendedor(user, pedido.vendedorId)
     validar_produtos(pedido.produtos)
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
-            validar_referencias(cursor, pedido)
-            cursor.execute("SELECT id FROM Pedido WHERE id = %s", (pedido_id,))
-            if cursor.fetchone() is None:
+            cursor.execute(
+                "SELECT id, vendedorId FROM Pedido WHERE id = %s", (pedido_id,)
+            )
+            pedido_atual = cursor.fetchone()
+            if pedido_atual is None:
                 raise HTTPException(status_code=404, detail="Pedido não encontrado.")
+            validar_acesso_vendedor(user, pedido_atual["vendedorId"])
+            validar_referencias(cursor, pedido)
 
             cursor.execute(
                 "UPDATE Pedido SET pagamento = %s, vendedorId = %s WHERE id = %s",
@@ -138,14 +178,19 @@ def atualizar_pedido(pedido_id: int, pedido: PedidoEntrada):
 
 
 @router.delete("/{pedido_id}", status_code=status.HTTP_204_NO_CONTENT)
-def excluir_pedido(pedido_id: int):
+def excluir_pedido(pedido_id: int, user: dict = Depends(get_current_user)):
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
+            cursor.execute(
+                "SELECT vendedorId FROM Pedido WHERE id = %s", (pedido_id,)
+            )
+            pedido_atual = cursor.fetchone()
+            if pedido_atual is None:
+                raise HTTPException(status_code=404, detail="Pedido não encontrado.")
+            validar_acesso_vendedor(user, pedido_atual["vendedorId"])
             cursor.execute("DELETE FROM ProdutosPedido WHERE pedidoId = %s", (pedido_id,))
             cursor.execute("DELETE FROM Pedido WHERE id = %s", (pedido_id,))
-            if cursor.rowcount == 0:
-                raise HTTPException(status_code=404, detail="Pedido não encontrado.")
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     except HTTPException:
         raise

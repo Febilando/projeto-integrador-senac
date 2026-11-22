@@ -74,13 +74,10 @@
     accent-color: #234d98;
 }
 
-.forgot-password {
-    color: #234d98;
-    font-weight: 600;
-}
-
-.forgot-password:hover {
-    text-decoration: underline;
+.forgot-password-note {
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 .login-form button {
@@ -88,9 +85,16 @@
     margin-top: 4px;
 }
 
-.forgot-password:focus-visible {
-    outline: 3px solid rgb(91 155 218 / 35%);
-    outline-offset: 3px;
+.login-feedback {
+    min-height: 20px;
+    margin: -8px 0 0;
+    color: #b42318;
+    font-size: 13px;
+}
+
+.login-form button:disabled {
+    opacity: 0.65;
+    cursor: wait;
 }
 
 @media (max-width: 480px) {

@@ -11,6 +11,10 @@ DEFAULT_DATABASE_HOST = "localhost"
 DEFAULT_DATABASE_PORT = 3306
 DEFAULT_DATABASE_USER = "gerenciador"
 DEFAULT_LOW_STOCK_LIMIT = 10
+DEFAULT_SESSION_COOKIE_NAME = "gerenciador_session"
+DEFAULT_SESSION_DURATION_SECONDS = 28_800
+DEFAULT_REMEMBERED_SESSION_DURATION_SECONDS = 2_592_000
+DEFAULT_SESSION_COOKIE_SAME_SITE = "lax"
 DEFAULT_CORS_ORIGINS = (
     "http://localhost:5500",
     "http://127.0.0.1:5500",
@@ -53,8 +57,28 @@ class Settings:
     database_name: str = os.getenv("MYSQL_DATABASE", DEFAULT_DATABASE_NAME)
     database_user: str = os.getenv("MYSQL_USER", DEFAULT_DATABASE_USER)
     database_password: str = os.getenv("MYSQL_PASSWORD", "")
+    auth_session_secret: str = os.getenv("AUTH_SESSION_SECRET", "")
+    session_cookie_name: str = os.getenv(
+        "SESSION_COOKIE_NAME", DEFAULT_SESSION_COOKIE_NAME
+    )
+    session_duration_seconds: int = int(
+        os.getenv(
+            "SESSION_DURATION_SECONDS",
+            str(DEFAULT_SESSION_DURATION_SECONDS),
+        )
+    )
+    remembered_session_duration_seconds: int = int(
+        os.getenv(
+            "REMEMBERED_SESSION_DURATION_SECONDS",
+            str(DEFAULT_REMEMBERED_SESSION_DURATION_SECONDS),
+        )
+    )
+    session_cookie_secure: bool = _read_bool("SESSION_COOKIE_SECURE", False)
+    session_cookie_same_site: str = os.getenv(
+        "SESSION_COOKIE_SAME_SITE", DEFAULT_SESSION_COOKIE_SAME_SITE
+    ).lower()
     cors_origins: tuple[str, ...] = _read_origins()
-    cors_allow_credentials: bool = _read_bool("CORS_ALLOW_CREDENTIALS", False)
+    cors_allow_credentials: bool = _read_bool("CORS_ALLOW_CREDENTIALS", True)
     low_stock_limit: int = int(
         os.getenv("LOW_STOCK_LIMIT", str(DEFAULT_LOW_STOCK_LIMIT))
     )

@@ -18,6 +18,9 @@ Documentação interativa: <http://localhost:8000/docs>.
 O arquivo `.env` também pode configurar `CORS_ORIGINS` (origens separadas por vírgula),
 `CORS_ALLOW_CREDENTIALS` e `LOW_STOCK_LIMIT`. O valor padrão de estoque baixo é
 centralizado na configuração da aplicação.
+Para autenticação, defina `AUTH_SESSION_SECRET` com uma chave aleatória de pelo menos
+32 caracteres e mantenha `SESSION_COOKIE_SECURE=false` somente no desenvolvimento local.
+Em produção, use HTTPS e configure `SESSION_COOKIE_SECURE=true`.
 
 Para parar os serviços, use `Ctrl+C` e depois:
 
@@ -26,6 +29,23 @@ docker compose down
 ```
 
 para encerrar os containers.
+
+## Primeiro administrador
+
+Depois que o banco e a API estiverem saudáveis, crie o primeiro administrador de
+forma interativa. A senha é digitada sem aparecer no terminal e não fica salva no
+SQL nem no código:
+
+```powershell
+docker compose exec api python -m app.create_admin
+```
+
+Use o ID exibido pelo comando e a senha definida para entrar em
+<http://127.0.0.1:5500/pages/login.html>.
+
+As rotas de Produtos e Usuários exigem sessão. Leitura de Produtos exige usuário
+ativo; criação, edição, reposição e exclusão exigem perfil `admin`. Vendedores
+autenticados podem consultar e operar somente os próprios pedidos.
 
 
 ## Execução local
