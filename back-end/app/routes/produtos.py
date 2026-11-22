@@ -1,8 +1,15 @@
 from pymysql.err import IntegrityError
 from fastapi import APIRouter, HTTPException, Query, Response, status
 
+from app.config import settings
 from app.conexao import conectar_banco
-from app.models.produto import ProdutoEntrada, ReposicaoEntrada
+from app.models.produto import (
+    MAXIMUM_PRODUCT_STOCK,
+    MINIMUM_PRODUCT_STOCK,
+    ProdutoEntrada,
+    ProdutoResposta,
+    ReposicaoEntrada,
+)
 
 router = APIRouter(prefix="/produtos", tags=["Produtos"])
 
@@ -16,7 +23,12 @@ def produto_dict(linha):
     }
 
 
-@router.get("")
+@router.get(
+    "",
+    response_model=list[ProdutoResposta],
+    summary="Listar produtos",
+    description="Retorna os produtos cadastrados em ordem crescente de identificador.",
+)
 def listar_produtos():
     try:
         with conectar_banco() as conexao:
@@ -24,10 +36,21 @@ def listar_produtos():
             cursor.execute("SELECT id, nome, estoque, img FROM Produto ORDER BY id")
             return [produto_dict(linha) for linha in cursor.fetchall()]
     except Exception as erro:
-        raise HTTPException(status_code=500, detail="Erro ao listar produtos.") from erro    
+        raise HTTPException(status_code=500, detail="Erro ao listar produtos.") from erro
 
-@router.get("/estoque-baixo")
-def listar_estoque_baixo(limite: int = Query(default=10, ge=0)):
+
+@router.get(
+    "/estoque-baixo",
+    response_model=list[ProdutoResposta],
+    summary="Listar produtos com estoque baixo",
+)
+def listar_estoque_baixo(
+    limite: int = Query(
+        default=settings.low_stock_limit,
+        ge=MINIMUM_PRODUCT_STOCK,
+        description="Estoque máximo para considerar um produto com estoque baixo.",
+    ),
+):
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
@@ -43,7 +66,12 @@ def listar_estoque_baixo(limite: int = Query(default=10, ge=0)):
         ) from erro
 
 
-@router.get("/{produto_id}")
+@router.get(
+    "/{produto_id}",
+    response_model=ProdutoResposta,
+    summary="Buscar produto",
+    responses={404: {"description": "Produto não encontrado."}},
+)
 def buscar_produto(produto_id: int):
     try:
         with conectar_banco() as conexao:
@@ -62,7 +90,12 @@ def buscar_produto(produto_id: int):
         raise HTTPException(status_code=500, detail="Erro ao buscar produto.") from erro
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=ProdutoResposta,
+    status_code=status.HTTP_201_CREATED,
+    summary="Cadastrar produto",
+)
 def criar_produto(produto: ProdutoEntrada):
     try:
         with conectar_banco() as conexao:
@@ -82,7 +115,12 @@ def criar_produto(produto: ProdutoEntrada):
         raise HTTPException(status_code=500, detail="Erro ao criar produto.") from erro
 
 
-@router.put("/{produto_id}")
+@router.put(
+    "/{produto_id}",
+    response_model=ProdutoResposta,
+    summary="Atualizar produto",
+    responses={404: {"description": "Produto não encontrado."}},
+)
 def atualizar_produto(produto_id: int, produto: ProdutoEntrada):
     try:
         with conectar_banco() as conexao:
@@ -107,7 +145,15 @@ def atualizar_produto(produto_id: int, produto: ProdutoEntrada):
         raise HTTPException(status_code=500, detail="Erro ao atualizar produto.") from erro
 
 
-@router.delete("/{produto_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{produto_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Excluir produto",
+    responses={
+        404: {"description": "Produto não encontrado."},
+        409: {"description": "Produto associado a pedidos."},
+    },
+)
 def excluir_produto(produto_id: int):
     try:
         with conectar_banco() as conexao:
@@ -125,18 +171,34 @@ def excluir_produto(produto_id: int):
         ) from erro
     except Exception as erro:
         raise HTTPException(status_code=500, detail="Erro ao excluir produto.") from erro
-    
-@router.post("/{produto_id}/reposicao")
+
+
+@router.post(
+    "/{produto_id}/reposicao",
+    response_model=ProdutoResposta,
+    summary="Repor estoque",
+    responses={404: {"description": "Produto não encontrado."}},
+)
 def repor_estoque(produto_id: int, reposicao: ReposicaoEntrada):
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
+                "SELECT estoque FROM Produto WHERE id = %s FOR UPDATE",
+                (produto_id,),
+            )
+            produto = cursor.fetchone()
+            if produto is None:
+                raise HTTPException(status_code=404, detail="Produto não encontrado.")
+            if produto["estoque"] > MAXIMUM_PRODUCT_STOCK - reposicao.quantidade:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="A reposição ultrapassa o limite máximo de estoque.",
+                )
+            cursor.execute(
                 "UPDATE Produto SET estoque = estoque + %s WHERE id = %s",
                 (reposicao.quantidade, produto_id),
             )
-            if cursor.rowcount == 0:
-                raise HTTPException(status_code=404, detail="Produto não encontrado.")
             cursor.execute(
                 "SELECT id, nome, estoque, img FROM Produto WHERE id = %s",
                 (produto_id,),
