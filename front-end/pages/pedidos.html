@@ -6,6 +6,8 @@
     <title>Pedidos</title>
     <link rel="stylesheet" href="../styles/reset.css">
     <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/pedidos.css">
     <script src="header/header.js" defer></script>
     <script type="module" src="sidebar/sidebar.js"></script>
     <script type="module" src="../assets/js/auth-guard.js"></script>
@@ -13,5 +15,65 @@
 <body class="has-sidebar">
     <aside class="sidebar" id="app-sidebar" aria-label="Navegação do sistema"></aside>
     <header></header>
+
+    <main class="orders-main">
+        <section class="orders-heading">
+            <div>
+                <p class="orders-eyebrow">Vendas</p>
+                <h1>Pedidos</h1>
+                <p>Consulte os pedidos registrados e suas formas de pagamento.</p>
+            </div>
+            <button class="orders-add-button" type="button" disabled>Novo pedido</button>
+        </section>
+
+        <section class="table-card">
+            <div class="table-card-heading">
+                <div>
+                    <h2>Pedidos registrados</h2>
+                    <p>Dados demonstrativos de vendas</p>
+                </div>
+                <span class="table-count">9 pedidos</span>
+            </div>
+
+            <div class="table-toolbar">
+                <div class="table-toolbar-actions">
+                    <div class="table-sort-controls">
+                        <span>Ordenar:</span>
+                        <button type="button">Mais recentes</button>
+                        <button type="button">ID ↑</button>
+                    </div>
+                </div>
+                <input
+                    class="input-text table-search"
+                    type="search"
+                    placeholder="Pesquisar pedidos..."
+                >
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Horário</th>
+                            <th scope="col">Pagamento</th>
+                            <th scope="col">Vendedor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="table-id">3001</td><td>21/11/2026 às 09:15</td><td>Cartão de crédito</td><td>Ana Souza</td></tr>
+                        <tr><td class="table-id">3002</td><td>21/11/2026 às 09:42</td><td>Pix</td><td>Carla Mendes</td></tr>
+                        <tr><td class="table-id">3003</td><td>21/11/2026 às 10:08</td><td>Cartão de débito</td><td>Ana Souza</td></tr>
+                        <tr><td class="table-id">3004</td><td>21/11/2026 às 10:36</td><td>Dinheiro</td><td>Felipe Costa</td></tr>
+                        <tr><td class="table-id">3005</td><td>21/11/2026 às 11:20</td><td>Pix</td><td>Giovana Reis</td></tr>
+                        <tr><td class="table-id">3006</td><td>21/11/2026 às 13:05</td><td>Cartão de crédito</td><td>Diego Alves</td></tr>
+                        <tr><td class="table-id">3007</td><td>21/11/2026 às 14:18</td><td>Cartão de débito</td><td>Eduarda Rocha</td></tr>
+                        <tr><td class="table-id">3008</td><td>21/11/2026 às 15:32</td><td>Pix</td><td>Isabela Pires</td></tr>
+                        <tr><td class="table-id">3009</td><td>21/11/2026 às 16:44</td><td>Dinheiro</td><td>Henrique Dias</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 </body>
 </html>

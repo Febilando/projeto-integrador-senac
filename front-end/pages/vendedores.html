@@ -6,6 +6,8 @@
     <title>Vendedores</title>
     <link rel="stylesheet" href="../styles/reset.css">
     <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/vendedores.css">
     <script src="header/header.js" defer></script>
     <script type="module" src="sidebar/sidebar.js"></script>
     <script type="module" src="../assets/js/auth-guard.js"></script>
@@ -13,5 +15,65 @@
 <body class="has-sidebar">
     <aside class="sidebar" id="app-sidebar" aria-label="Navegação do sistema"></aside>
     <header></header>
+
+    <main class="users-main">
+        <section class="users-heading">
+            <div>
+                <p class="users-eyebrow">Acessos</p>
+                <h1>Vendedores</h1>
+                <p>Gerencie os usuários e suas funções no sistema.</p>
+            </div>
+            <button class="users-add-button" type="button" disabled>Novo usuário</button>
+        </section>
+
+        <section class="table-card">
+            <div class="table-card-heading">
+                <div>
+                    <h2>Usuários cadastrados</h2>
+                    <p>Dados de acesso demonstrativos</p>
+                </div>
+                <span class="table-count">9 usuários</span>
+            </div>
+
+            <div class="table-toolbar">
+                <div class="table-toolbar-actions">
+                    <div class="table-sort-controls">
+                        <span>Ordenar:</span>
+                        <button type="button">Alfabética ↑</button>
+                        <button type="button">ID ↑</button>
+                    </div>
+                </div>
+                <input
+                    class="input-text table-search"
+                    type="search"
+                    placeholder="Pesquisar usuários..."
+                >
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">Senha</th>
+                            <th scope="col">Função</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="table-id">2001</td><td class="table-name">Ana Souza</td><td>••••••••</td><td>Administrador</td></tr>
+                        <tr><td class="table-id">2002</td><td class="table-name">Bruno Lima</td><td>••••••••</td><td>Vendedor</td></tr>
+                        <tr><td class="table-id">2003</td><td class="table-name">Carla Mendes</td><td>••••••••</td><td>Vendedor</td></tr>
+                        <tr><td class="table-id">2004</td><td class="table-name">Diego Alves</td><td>••••••••</td><td>Vendedor</td></tr>
+                        <tr><td class="table-id">2005</td><td class="table-name">Eduarda Rocha</td><td>••••••••</td><td>Vendedor</td></tr>
+                        <tr><td class="table-id">2006</td><td class="table-name">Felipe Costa</td><td>••••••••</td><td>Vendedor</td></tr>
+                        <tr><td class="table-id">2007</td><td class="table-name">Giovana Reis</td><td>••••••••</td><td>Vendedor</td></tr>
+                        <tr><td class="table-id">2008</td><td class="table-name">Henrique Dias</td><td>••••••••</td><td>Administrador</td></tr>
+                        <tr><td class="table-id">2009</td><td class="table-name">Isabela Pires</td><td>••••••••</td><td>Vendedor</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
