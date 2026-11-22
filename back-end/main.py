@@ -1,13 +1,27 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.bootstrap import garantir_administrador_inicial
 from app.config import settings
 from app.routes.auth import router as auth_router
 from app.routes.pedidos import router as pedidos_router
 from app.routes.produtos import router as produtos_router
 from app.routes.usuarios import router as usuarios_router
 
-app = FastAPI(title="GerenciadorPedidos", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    garantir_administrador_inicial()
+    yield
+
+
+app = FastAPI(
+    title="GerenciadorPedidos",
+    version="1.0.0",
+    lifespan=lifespan,
+)
 
 app.add_middleware(
     CORSMiddleware,

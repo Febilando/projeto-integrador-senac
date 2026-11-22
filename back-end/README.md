@@ -32,16 +32,9 @@ para encerrar os containers.
 
 ## Primeiro administrador
 
-Depois que o banco e a API estiverem saudáveis, crie o primeiro administrador de
-forma interativa. A senha é digitada sem aparecer no terminal e não fica salva no
-SQL nem no código:
-
-```powershell
-docker compose exec api python -m app.create_admin
-```
-
-Use o ID exibido pelo comando e a senha definida para entrar em
-<http://127.0.0.1:5500/pages/login.html>.
+Ao iniciar, a API cria automaticamente um administrador se ainda não
+existir nenhum. O ID de login é `100`; defina a senha inicial no `.env`. Solução para contexto acadêmico, sabemos que não é segura.
+Acesse <http://localhost:5500/pages/login.html> com ID `100` e a senha configurada.
 
 As rotas de Produtos e Usuários exigem sessão. Leitura de Produtos exige usuário
 ativo; criação, edição, reposição e exclusão exigem perfil `admin`. Vendedores

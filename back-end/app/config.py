@@ -57,6 +57,7 @@ class Settings:
     database_name: str = os.getenv("MYSQL_DATABASE", DEFAULT_DATABASE_NAME)
     database_user: str = os.getenv("MYSQL_USER", DEFAULT_DATABASE_USER)
     database_password: str = os.getenv("MYSQL_PASSWORD", "")
+    initial_admin_password: str = os.getenv("INITIAL_ADMIN_PASSWORD", "")
     auth_session_secret: str = os.getenv("AUTH_SESSION_SECRET", "")
     session_cookie_name: str = os.getenv(
         "SESSION_COOKIE_NAME", DEFAULT_SESSION_COOKIE_NAME
