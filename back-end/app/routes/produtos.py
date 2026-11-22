@@ -5,6 +5,7 @@ from app.config import settings
 from app.conexao import conectar_banco
 from app.models.produto import (
     MAXIMUM_PRODUCT_BARCODE_LENGTH,
+    MAXIMUM_PRODUCT_NAME_LENGTH,
     MAXIMUM_PRODUCT_STOCK,
     MINIMUM_PRODUCT_STOCK,
     ProdutoEntrada,
@@ -22,6 +23,7 @@ def produto_dict(linha):
         "estoque": linha["estoque"],
         "img": linha["img"],
         "cod_barras": linha["cod_barras"],
+        "preco": linha["preco"],
     }
 
 
@@ -29,15 +31,35 @@ def produto_dict(linha):
     "",
     response_model=list[ProdutoResposta],
     summary="Listar produtos",
-    description="Retorna os produtos cadastrados em ordem crescente de identificador.",
+    description=(
+        "Retorna os produtos em ordem crescente de identificador. Quando informado, "
+        "busca por código de barras exato ou por parte do nome."
+    ),
 )
-def listar_produtos():
+def listar_produtos(
+    busca: str | None = Query(
+        default=None,
+        max_length=MAXIMUM_PRODUCT_NAME_LENGTH,
+        description="Código de barras exato ou parte do nome do produto.",
+    ),
+):
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
-            cursor.execute(
-                "SELECT id, nome, estoque, img, cod_barras FROM Produto ORDER BY id"
-            )
+            termo = busca.strip() if busca else ""
+            if termo:
+                cursor.execute(
+                    """SELECT id, nome, estoque, img, cod_barras, preco
+                       FROM Produto
+                       WHERE cod_barras = %s OR nome LIKE %s
+                       ORDER BY CASE WHEN cod_barras = %s THEN 0 ELSE 1 END, id""",
+                    (termo, f"%{termo}%", termo),
+                )
+            else:
+                cursor.execute(
+                    """SELECT id, nome, estoque, img, cod_barras, preco
+                       FROM Produto ORDER BY id"""
+                )
             return [produto_dict(linha) for linha in cursor.fetchall()]
     except Exception as erro:
         raise HTTPException(status_code=500, detail="Erro ao listar produtos.") from erro
@@ -59,7 +81,7 @@ def listar_estoque_baixo(
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
-                "SELECT id, nome, estoque, img, cod_barras FROM Produto "
+                "SELECT id, nome, estoque, img, cod_barras, preco FROM Produto "
                 "WHERE estoque <= %s ORDER BY estoque, id",
                 (limite,),
             )
@@ -91,7 +113,7 @@ def buscar_produto_por_codigo_barras(
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
-                "SELECT id, nome, estoque, img, cod_barras FROM Produto "
+                "SELECT id, nome, estoque, img, cod_barras, preco FROM Produto "
                 "WHERE cod_barras = %s",
                 (codigo,),
             )
@@ -118,7 +140,8 @@ def buscar_produto(produto_id: int):
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
-                "SELECT id, nome, estoque, img, cod_barras FROM Produto WHERE id = %s",
+                """SELECT id, nome, estoque, img, cod_barras, preco
+                   FROM Produto WHERE id = %s""",
                 (produto_id,),
             )
             linha = cursor.fetchone()
@@ -142,13 +165,20 @@ def criar_produto(produto: ProdutoEntrada):
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
-                """INSERT INTO Produto (nome, estoque, img, cod_barras)
-                   VALUES (%s, %s, %s, %s)""",
-                (produto.nome, produto.estoque, produto.img, produto.cod_barras),
+                """INSERT INTO Produto (nome, estoque, img, cod_barras, preco)
+                   VALUES (%s, %s, %s, %s, %s)""",
+                (
+                    produto.nome,
+                    produto.estoque,
+                    produto.img,
+                    produto.cod_barras,
+                    produto.preco,
+                ),
             )
             produto_id = cursor.lastrowid
             cursor.execute(
-                "SELECT id, nome, estoque, img, cod_barras FROM Produto WHERE id = %s",
+                """SELECT id, nome, estoque, img, cod_barras, preco
+                   FROM Produto WHERE id = %s""",
                 (produto_id,),
             )
             return produto_dict(cursor.fetchone())
@@ -177,18 +207,20 @@ def atualizar_produto(produto_id: int, produto: ProdutoEntrada):
                 raise HTTPException(status_code=404, detail="Produto não encontrado.")
             cursor.execute(
                 """UPDATE Produto
-                   SET nome = %s, estoque = %s, img = %s, cod_barras = %s
+                   SET nome = %s, estoque = %s, img = %s, cod_barras = %s, preco = %s
                    WHERE id = %s""",
                 (
                     produto.nome,
                     produto.estoque,
                     produto.img,
                     produto.cod_barras,
+                    produto.preco,
                     produto_id,
                 ),
             )
             cursor.execute(
-                "SELECT id, nome, estoque, img, cod_barras FROM Produto WHERE id = %s",
+                """SELECT id, nome, estoque, img, cod_barras, preco
+                   FROM Produto WHERE id = %s""",
                 (produto_id,),
             )
             return produto_dict(cursor.fetchone())
@@ -259,7 +291,8 @@ def repor_estoque(produto_id: int, reposicao: ReposicaoEntrada):
                 (reposicao.quantidade, produto_id),
             )
             cursor.execute(
-                "SELECT id, nome, estoque, img, cod_barras FROM Produto WHERE id = %s",
+                """SELECT id, nome, estoque, img, cod_barras, preco
+                   FROM Produto WHERE id = %s""",
                 (produto_id,),
             )
             return produto_dict(cursor.fetchone())

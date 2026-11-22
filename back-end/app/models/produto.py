@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from pydantic import BaseModel, Field, field_validator
 
 MINIMUM_PRODUCT_NAME_LENGTH = 1
@@ -7,6 +9,9 @@ MAXIMUM_PRODUCT_STOCK = 2_147_483_647
 MAXIMUM_PRODUCT_NAME_LENGTH = 150
 MAXIMUM_PRODUCT_IMAGE_LENGTH = 500
 MAXIMUM_PRODUCT_BARCODE_LENGTH = 100
+MAXIMUM_PRODUCT_PRICE_DIGITS = 10
+PRODUCT_PRICE_DECIMAL_PLACES = 2
+MINIMUM_PRODUCT_PRICE = Decimal("0.00")
 
 
 class ProdutoEntrada(BaseModel):
@@ -35,6 +40,14 @@ class ProdutoEntrada(BaseModel):
         description="Código de barras usado para localizar o produto.",
         examples=["7891234567890"],
     )
+    preco: Decimal = Field(
+        default=MINIMUM_PRODUCT_PRICE,
+        ge=MINIMUM_PRODUCT_PRICE,
+        max_digits=MAXIMUM_PRODUCT_PRICE_DIGITS,
+        decimal_places=PRODUCT_PRICE_DECIMAL_PLACES,
+        description="Preço unitário do produto em reais.",
+        examples=["24.90"],
+    )
 
     @field_validator("nome", mode="before")
     @classmethod
@@ -61,6 +74,9 @@ class ProdutoResposta(BaseModel):
     cod_barras: str | None = Field(
         default=None,
         description="Código de barras do produto.",
+    )
+    preco: Decimal = Field(
+        description="Preço unitário do produto em reais.",
     )
 
 class ReposicaoEntrada(BaseModel):
