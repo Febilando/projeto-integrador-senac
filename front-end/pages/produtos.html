@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="../styles/produtos.css">
     <script src="header/header.js" defer></script>
+    <script type="module" src="../assets/js/produtos.js"></script>
 </head>
 <body>
     <header></header>
@@ -19,19 +20,15 @@
                 <h1>Produtos</h1>
                 <p class="products-description">Consulte e acompanhe os produtos cadastrados.</p>
             </div>
-            <button
-                class="products-add-button"
-                type="button"
-                disabled
-            >
-                Novo produto
-            </button>
+            <div class="products-heading-actions">
+                <button class="products-primary-button" id="new-product" type="button">
+                    Novo produto
+                </button>
+                <button class="products-refresh-button" id="refresh-products" type="button">
+                    Atualizar lista
+                </button>
+            </div>
         </section>
-
-        <div class="products-notice" role="status">
-            <span class="products-notice-icon" aria-hidden="true">i</span>
-            <p><strong>Dados demonstrativos:</strong> os nove produtos abaixo são exemplos estáticos escritos no HTML.</p>
-        </div>
 
         <section class="table-card">
             <div class="table-card-heading">
@@ -39,17 +36,15 @@
                     <h2>Catálogo de produtos</h2>
                     <p>Produtos e níveis de estoque</p>
                 </div>
-                <span class="table-count">9 produtos</span>
+                <span class="table-count" id="products-count" aria-live="polite">Carregando...</span>
             </div>
 
             <div class="table-toolbar">
                 <div class="table-toolbar-actions">
                     <div class="table-sort-controls" role="group">
                         <span>Ordenar:</span>
-                        <button type="button">Alfabética ↑</button>
-                        <button type="button">
-                            Estoque ↑
-                        </button>
+                        <button type="button" data-sort="nome" data-label="Alfabética" aria-pressed="true">Alfabética ↑</button>
+                        <button type="button" data-sort="estoque" data-label="Estoque" aria-pressed="false">Estoque ↑</button>
                     </div>
                     <div class="table-stock-filter">
                         <span>Estoque máximo</span>
@@ -70,6 +65,8 @@
                 >
             </div>
 
+            <p class="products-feedback" id="products-feedback" role="status" aria-live="polite">Conectando à API...</p>
+
             <div class="table-wrap">
                 <table class="data-table">
                     <thead>
@@ -79,76 +76,57 @@
                             <th scope="col">Produto</th>
                             <th scope="col">Estoque</th>
                             <th scope="col">Disponibilidade</th>
+                            <th scope="col">Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
-                            <td class="table-id">1001</td>
-                            <td class="table-name">Caderno universitário 10 matérias</td>
-                            <td>42 unidades</td>
-                            <td><span class="table-status table-status--available">Em estoque</span></td>
-                        </tr>
-                        <tr>
-                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
-                            <td class="table-id">1002</td>
-                            <td class="table-name">Caneta esferográfica azul</td>
-                            <td>120 unidades</td>
-                            <td><span class="table-status table-status--available">Em estoque</span></td>
-                        </tr>
-                        <tr>
-                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
-                            <td class="table-id">1003</td>
-                            <td class="table-name">Mochila urbana</td>
-                            <td>8 unidades</td>
-                            <td><span class="table-status table-status--low">Estoque baixo</span></td>
-                        </tr>
-                        <tr>
-                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
-                            <td class="table-id">1004</td>
-                            <td class="table-name">Garrafa térmica inox</td>
-                            <td>0 unidades</td>
-                            <td><span class="table-status table-status--unavailable">Sem estoque</span></td>
-                        </tr>
-                        <tr>
-                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
-                            <td class="table-id">1005</td>
-                            <td class="table-name">Fone de ouvido Bluetooth</td>
-                            <td>16 unidades</td>
-                            <td><span class="table-status table-status--available">Em estoque</span></td>
-                        </tr>
-                        <tr>
-                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
-                            <td class="table-id">1006</td>
-                            <td class="table-name">Mouse sem fio</td>
-                            <td>6 unidades</td>
-                            <td><span class="table-status table-status--low">Estoque baixo</span></td>
-                        </tr>
-                        <tr>
-                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
-                            <td class="table-id">1007</td>
-                            <td class="table-name">Teclado compacto</td>
-                            <td>23 unidades</td>
-                            <td><span class="table-status table-status--available">Em estoque</span></td>
-                        </tr>
-                        <tr>
-                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
-                            <td class="table-id">1008</td>
-                            <td class="table-name">Luminária de mesa LED</td>
-                            <td>9 unidades</td>
-                            <td><span class="table-status table-status--low">Estoque baixo</span></td>
-                        </tr>
-                        <tr>
-                            <td><img class="table-image" src="..\assets\Senac_logo.svg.webp" alt=""></td>
-                            <td class="table-id">1009</td>
-                            <td class="table-name">Agenda permanente</td>
-                            <td>38 unidades</td>
-                            <td><span class="table-status table-status--available">Em estoque</span></td>
-                        </tr>
+                    <tbody id="products-rows" aria-busy="true">
+                        <tr><td class="table-message" colspan="6">Carregando produtos...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
     </main>
+
+    <dialog class="product-dialog" id="product-dialog" aria-labelledby="product-dialog-title">
+        <form class="product-form" id="product-form">
+            <div class="product-dialog-heading">
+                <h2 id="product-dialog-title">Novo produto</h2>
+                <button class="dialog-close-button" type="button" data-close-product-dialog aria-label="Fechar formulário">×</button>
+            </div>
+            <p class="product-form-feedback" id="product-form-feedback" role="alert" aria-live="polite"></p>
+
+            <label for="product-name">Nome</label>
+            <input class="input-text" id="product-name" name="nome" type="text" required>
+
+            <label for="product-stock">Estoque inicial</label>
+            <input class="input-text" id="product-stock" name="estoque" type="number" min="0" step="1" required>
+
+            <label for="product-image">Imagem (URL ou caminho, opcional)</label>
+            <input class="input-text" id="product-image" name="img" type="text">
+
+            <div class="product-form-actions">
+                <button class="product-secondary-button" type="button" data-close-product-dialog>Cancelar</button>
+                <button class="products-primary-button" id="save-product" type="submit">Salvar produto</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog class="product-dialog" id="restock-dialog" aria-labelledby="restock-dialog-title">
+        <form class="product-form" id="restock-form">
+            <div class="product-dialog-heading">
+                <h2 id="restock-dialog-title">Repor estoque</h2>
+                <button class="dialog-close-button" type="button" data-close-restock-dialog aria-label="Fechar formulário">×</button>
+            </div>
+            <p class="product-form-feedback" id="restock-form-feedback" role="alert" aria-live="polite"></p>
+
+            <label for="restock-quantity">Quantidade a adicionar</label>
+            <input class="input-text" id="restock-quantity" name="quantidade" type="number" min="1" step="1" required>
+
+            <div class="product-form-actions">
+                <button class="product-secondary-button" type="button" data-close-restock-dialog>Cancelar</button>
+                <button class="products-primary-button" id="save-restock" type="submit">Confirmar reposição</button>
+            </div>
+        </form>
+    </dialog>
 </body>
 </html>
