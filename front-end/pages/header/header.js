@@ -17,7 +17,13 @@ async function carregarCabecalho() {
         document.head.appendChild(estilo);
     }
 
-    const resposta = await fetch(new URL("header.html", pastaHeader));
+    let resposta;
+    try {
+        resposta = await fetch(new URL("header.html", pastaHeader));
+    } catch (erro) {
+        console.error("Não foi possível carregar o cabeçalho.", erro);
+        return;
+    }
 
     if (!resposta.ok) {
         console.error("Não foi possível carregar o header.");
@@ -25,6 +31,10 @@ async function carregarCabecalho() {
     }
 
     local.outerHTML = await resposta.text();
+
+    const frontendRoot = new URL("../../", pastaHeader);
+    const homeLink = document.querySelector("header .marca a");
+    if (homeLink) homeLink.href = new URL("index.html", frontendRoot).href;
 
     const lupa = document.querySelector("header form img");
 
@@ -37,6 +47,8 @@ async function carregarCabecalho() {
     if (paginaAtual) {
         paginaAtual.textContent = document.title;
     }
+
+    document.dispatchEvent(new CustomEvent("app:header-loaded"));
 }
 
 carregarCabecalho();

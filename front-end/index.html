@@ -6,42 +6,14 @@
     <title>Index</title>
     <link rel="stylesheet" href="styles/reset.css">
     <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
     <script src="pages/header/header.js" defer></script>
+    <script type="module" src="pages/sidebar/sidebar.js"></script>
+    <script type="module" src="assets/js/auth-guard.js"></script>
 </head>
-<body>
+<body class="has-sidebar">
     <div class="app-container">
-
-        <!-- Barra Lateral -->
-        <aside class="sidebar">
-            <div class="logo-area">
-                <span class="logo-icon">Foto</span>
-                <span class="logo-text">Empresa</span>
-            </div>
-            
-            <nav class="nav-menu">
-                <a href="#" class="nav-item active">
-                    <span class="icon">📊</span> Dashboard
-                </a>
-                <a href="#" class="nav-item">
-                    <span class="icon">🛒</span> Pedidos <span class="badge">Numero</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <span class="icon">📦</span> Produtos
-                </a>
-                <a href="#" class="nav-item">
-                    <span class="icon">📈</span> Estatísticas
-                </a>
-                <a href="#" class="nav-item">
-                    <span class="icon">👥</span> Vendedores
-                </a>
-                <a href="#" class="nav-item">
-                    <span class="icon">👤</span> Perfil
-                </a>
-                <a href="#" class="nav-item">
-                    <span class="icon">⚙️</span> Configurações
-                </a>
-            </nav>
-        </aside>
+        <aside class="sidebar" id="app-sidebar" aria-label="Navegação do sistema"></aside>
 
         <!-- Conteúdo Principal -->
         <main class="main-area">

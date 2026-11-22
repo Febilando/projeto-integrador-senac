@@ -1,11 +1,19 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_HOST = window.location.hostname === "localhost"
+    ? "localhost"
+    : "127.0.0.1";
+const API_BASE_URL = `http://${API_HOST}:8000`;
 const REQUEST_TIMEOUT_MS = 10000;
+const SAFE_HTTP_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+const LOGIN_PAGE_URL = new URL("../../pages/login.html", import.meta.url);
 const API_FIELD_LABELS = {
     nome: "Nome",
     estoque: "Estoque",
     img: "Imagem",
     quantidade: "Quantidade",
+    senha: "Senha",
+    id: "ID",
 };
+let csrfToken = null;
 
 function formatValidationErrors(errors) {
     return errors.map((issue) => {
@@ -32,6 +40,11 @@ function formatValidationErrors(errors) {
 }
 
 export async function apiRequest(path, options = {}) {
+    const method = (options.method ?? "GET").toUpperCase();
+    if (!SAFE_HTTP_METHODS.has(method) && path !== "/auth/login" && !csrfToken) {
+        await apiRequest("/auth/me");
+    }
+
     const controller = new AbortController();
     const timeoutId = window.setTimeout(
         () => controller.abort(),
@@ -42,11 +55,16 @@ export async function apiRequest(path, options = {}) {
     if (options.body && !headers.has("Content-Type")) {
         headers.set("Content-Type", "application/json");
     }
+    if (!SAFE_HTTP_METHODS.has(method) && csrfToken) {
+        headers.set("X-CSRF-Token", csrfToken);
+    }
 
     try {
         const response = await fetch(new URL(path, API_BASE_URL), {
             ...options,
+            method,
             headers,
+            credentials: "include",
             signal: controller.signal,
         });
         const responseBody = response.status === 204
@@ -54,13 +72,26 @@ export async function apiRequest(path, options = {}) {
             : await response.json().catch(() => null);
 
         if (!response.ok) {
+            if (
+                response.status === 401
+                && path !== "/auth/login"
+                && path !== "/auth/me"
+            ) {
+                window.location.assign(LOGIN_PAGE_URL.href);
+            }
             const detail = responseBody?.detail;
             const message = typeof detail === "string"
                 ? detail
                 : Array.isArray(detail)
                     ? formatValidationErrors(detail)
                     : "Não foi possível concluir a solicitação.";
-            throw new Error(message);
+            const requestError = new Error(message);
+            requestError.status = response.status;
+            throw requestError;
+        }
+
+        if (typeof responseBody?.csrf_token === "string") {
+            csrfToken = responseBody.csrf_token;
         }
 
         return responseBody;

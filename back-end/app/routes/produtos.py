@@ -1,6 +1,7 @@
 from pymysql.err import IntegrityError
-from fastapi import APIRouter, HTTPException, Query, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
+from app.auth import get_current_user, require_admin
 from app.config import settings
 from app.conexao import conectar_banco
 from app.models.produto import (
@@ -25,6 +26,7 @@ def produto_dict(linha):
 
 @router.get(
     "",
+    dependencies=[Depends(get_current_user)],
     response_model=list[ProdutoResposta],
     summary="Listar produtos",
     description="Retorna os produtos cadastrados em ordem crescente de identificador.",
@@ -41,6 +43,7 @@ def listar_produtos():
 
 @router.get(
     "/estoque-baixo",
+    dependencies=[Depends(get_current_user)],
     response_model=list[ProdutoResposta],
     summary="Listar produtos com estoque baixo",
 )
@@ -68,6 +71,7 @@ def listar_estoque_baixo(
 
 @router.get(
     "/{produto_id}",
+    dependencies=[Depends(get_current_user)],
     response_model=ProdutoResposta,
     summary="Buscar produto",
     responses={404: {"description": "Produto não encontrado."}},
@@ -92,6 +96,7 @@ def buscar_produto(produto_id: int):
 
 @router.post(
     "",
+    dependencies=[Depends(require_admin)],
     response_model=ProdutoResposta,
     status_code=status.HTTP_201_CREATED,
     summary="Cadastrar produto",
@@ -117,6 +122,7 @@ def criar_produto(produto: ProdutoEntrada):
 
 @router.put(
     "/{produto_id}",
+    dependencies=[Depends(require_admin)],
     response_model=ProdutoResposta,
     summary="Atualizar produto",
     responses={404: {"description": "Produto não encontrado."}},
@@ -147,6 +153,7 @@ def atualizar_produto(produto_id: int, produto: ProdutoEntrada):
 
 @router.delete(
     "/{produto_id}",
+    dependencies=[Depends(require_admin)],
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Excluir produto",
     responses={
@@ -175,6 +182,7 @@ def excluir_produto(produto_id: int):
 
 @router.post(
     "/{produto_id}/reposicao",
+    dependencies=[Depends(require_admin)],
     response_model=ProdutoResposta,
     summary="Repor estoque",
     responses={404: {"description": "Produto não encontrado."}},
