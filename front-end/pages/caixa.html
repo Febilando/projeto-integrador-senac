@@ -20,8 +20,9 @@
 
         <div class="order-notice">
             <span class="order-notice-icon" aria-hidden="true">i</span>
-            <p><strong>Atenção:</strong> produtos e preços vêm da API. A finalização do pedido ainda não está integrada.</p>
+            <p><strong>Atenção:</strong> o pedido será salvo na API após a confirmação.</p>
         </div>
+        <p class="order-success" id="order-success" role="status" aria-live="polite" hidden></p>
 
         <div class="order-layout">
             <section class="table-card order-products">
@@ -103,9 +104,19 @@
                     </label>
                 </fieldset>
 
-                <button class="order-submit" type="button" disabled>Finalizar pedido</button>
+                <button class="order-submit" id="finalize-order" type="button" disabled>Finalizar pedido</button>
             </aside>
         </div>
     </main>
+
+    <dialog class="order-confirmation-dialog" id="order-confirmation">
+        <h2>Deseja finalizar o pedido?</h2>
+        <p>Ao confirmar, o pedido será registrado e o caixa ficará pronto para um novo pedido.</p>
+        <p class="order-confirmation-feedback" id="order-confirmation-feedback" role="alert" aria-live="polite"></p>
+        <div class="order-confirmation-actions">
+            <button class="order-confirmation-cancel" id="cancel-order" type="button">Cancelar</button>
+            <button class="order-confirmation-confirm" id="confirm-order" type="button">Confirmar pedido</button>
+        </div>
+    </dialog>
 </body>
 </html>

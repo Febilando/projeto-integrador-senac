@@ -12,6 +12,13 @@ const summaryItems = document.querySelector("#summary-items");
 const summaryEmpty = document.querySelector("#summary-empty");
 const summaryQuantity = document.querySelector("#summary-quantity");
 const orderTotal = document.querySelector("#order-total");
+const finalizeButton = document.querySelector("#finalize-order");
+const confirmationDialog = document.querySelector("#order-confirmation");
+const confirmationFeedback = document.querySelector("#order-confirmation-feedback");
+const successMessage = document.querySelector("#order-success");
+const cancelOrderButton = document.querySelector("#cancel-order");
+const confirmOrderButton = document.querySelector("#confirm-order");
+const paymentInputs = document.querySelectorAll('input[name="pagamento"]');
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -21,6 +28,8 @@ const selectedProducts = new Map();
 let searchResults = [];
 let searchTimeoutId = null;
 let searchRequestId = 0;
+let isFinalizingOrder = false;
+let orderQuantitiesCapability = null;
 
 function formatPrice(value) {
     return currencyFormatter.format(Number(value));
@@ -111,6 +120,14 @@ function updateSummary() {
     summaryEmpty.hidden = selectedProducts.size > 0;
     summaryQuantity.textContent = String(totalUnits);
     orderTotal.textContent = formatPrice(totalCents / 100);
+    updateFinalizeButton();
+}
+
+function updateFinalizeButton() {
+    const hasPaymentMethod = document.querySelector(
+        'input[name="pagamento"]:checked',
+    ) !== null;
+    finalizeButton.disabled = selectedProducts.size === 0 || !hasPaymentMethod;
 }
 
 function updateSelectedProduct(row, input) {
@@ -201,6 +218,7 @@ function addProduct(product) {
     productSearch.value = "";
     searchResults = [];
     searchResultsElement.hidden = true;
+    successMessage.hidden = true;
     renderSelectedProducts();
     updateSummary();
     productSearch.focus();
@@ -273,7 +291,6 @@ function scheduleProductSearch() {
     );
 }
 
-productSearch.addEventListener("input", scheduleProductSearch);
 productSearch.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
         event.preventDefault();
@@ -301,6 +318,133 @@ productsList.addEventListener("input", (event) => {
 document.addEventListener("click", (event) => {
     if (!orderSearch.contains(event.target)) {
         searchResultsElement.hidden = true;
+    }
+});
+
+function resetOrder() {
+    selectedProducts.clear();
+    window.clearTimeout(searchTimeoutId);
+    searchRequestId += 1;
+    searchResults = [];
+    productSearch.value = "";
+    searchResultsElement.replaceChildren();
+    searchResultsElement.hidden = true;
+    for (const input of paymentInputs) {
+        input.checked = false;
+    }
+
+    renderSelectedProducts();
+    updateSummary();
+    successMessage.textContent = "Pedido salvo com sucesso. Pronto para um novo pedido.";
+    successMessage.hidden = false;
+    productSearch.focus();
+}
+
+function setFinalizingOrder(isFinalizing) {
+    isFinalizingOrder = isFinalizing;
+    confirmOrderButton.disabled = isFinalizing;
+    cancelOrderButton.disabled = isFinalizing;
+    confirmOrderButton.textContent = isFinalizing
+        ? "Registrando pedido..."
+        : "Confirmar pedido";
+}
+
+function verifyOrderQuantitiesCapability() {
+    if (!orderQuantitiesCapability) {
+        orderQuantitiesCapability = apiRequest("/openapi.json")
+            .then((specification) => {
+                const requestSchema = specification?.paths?.["/pedidos"]
+                    ?.post?.requestBody?.content?.["application/json"]?.schema;
+                const schemaName = requestSchema?.$ref?.split("/").at(-1);
+                const orderSchema = schemaName
+                    ? specification.components?.schemas?.[schemaName]
+                    : requestSchema;
+
+                if (!orderSchema?.properties?.quantidades) {
+                    throw new Error(
+                        "A API precisa ser atualizada para salvar as quantidades do pedido.",
+                    );
+                }
+            })
+            .catch((error) => {
+                orderQuantitiesCapability = null;
+                throw error;
+            });
+    }
+
+    return orderQuantitiesCapability;
+}
+
+async function finalizeOrder() {
+    if (finalizeButton.disabled || isFinalizingOrder) return;
+
+    const pagamento = document.querySelector(
+        'input[name="pagamento"]:checked',
+    )?.value;
+    if (!pagamento) return;
+
+    const items = [...selectedProducts.entries()];
+    if (items.length === 0) return;
+
+    setFinalizingOrder(true);
+    confirmationFeedback.textContent = "Registrando pedido...";
+
+    try {
+        await verifyOrderQuantitiesCapability();
+        const session = await apiRequest("/auth/me");
+        const vendedorId = Number(session?.usuario?.id);
+        if (!Number.isSafeInteger(vendedorId) || vendedorId <= 0) {
+            throw new Error("Não foi possível identificar o vendedor autenticado.");
+        }
+
+        const payload = {
+            pagamento,
+            vendedorId,
+            produtos: items.map(([productId]) => productId),
+            quantidades: items.map(([, selection]) => selection.quantity),
+        };
+        await apiRequest("/pedidos", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+
+        confirmationDialog.close();
+        confirmationFeedback.textContent = "";
+        resetOrder();
+    } catch (error) {
+        confirmationFeedback.textContent = error.message;
+    } finally {
+        setFinalizingOrder(false);
+    }
+}
+
+productSearch.addEventListener("input", () => {
+    successMessage.hidden = true;
+    scheduleProductSearch();
+});
+
+for (const input of paymentInputs) {
+    input.addEventListener("change", () => {
+        successMessage.hidden = true;
+        updateFinalizeButton();
+    });
+}
+
+finalizeButton.addEventListener("click", () => {
+    if (!finalizeButton.disabled) {
+        confirmationFeedback.textContent = "";
+        confirmationDialog.showModal();
+    }
+});
+
+cancelOrderButton.addEventListener("click", () => {
+    confirmationDialog.close();
+});
+
+confirmOrderButton.addEventListener("click", finalizeOrder);
+confirmationDialog.addEventListener("cancel", (event) => {
+    if (isFinalizingOrder) {
+        event.preventDefault();
     }
 });
 
