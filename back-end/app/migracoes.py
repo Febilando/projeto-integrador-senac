@@ -54,5 +54,18 @@ def executar_migracoes():
                     """ALTER TABLE Produto
                        ADD COLUMN preco DECIMAL(10, 2) NOT NULL DEFAULT 0.00"""
                 )
+
+            cursor.execute(
+                """SELECT COUNT(*) AS quantidade
+                   FROM information_schema.columns
+                   WHERE table_schema = DATABASE()
+                     AND table_name = 'ProdutosPedido'
+                     AND column_name = 'quantidade'"""
+            )
+            if cursor.fetchone()["quantidade"] == 0:
+                cursor.execute(
+                    """ALTER TABLE ProdutosPedido
+                       ADD COLUMN quantidade INT NOT NULL DEFAULT 1"""
+                )
         finally:
             cursor.execute("SELECT RELEASE_LOCK(%s)", (NOME_LOCK_MIGRACOES,))

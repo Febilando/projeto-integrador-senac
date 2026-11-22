@@ -6,15 +6,17 @@ from app.conexao import conectar_banco
 from app.models.pedido import PedidoEntrada
 
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
+MAXIMUM_ORDER_ITEM_QUANTITY = 2_147_483_647
 
 
-def pedido_dict(linha, produtos):
+def pedido_dict(linha, produtos, quantidades):
     return {
         "id": linha["id"],
         "horario": linha["horario"],
         "pagamento": linha["pagamento"],
         "vendedorId": linha["vendedorId"],
         "produtos": produtos,
+        "quantidades": quantidades,
     }
 
 
@@ -23,8 +25,31 @@ def validar_produtos(produtos):
         raise HTTPException(status_code=422, detail="A lista de produtos contém IDs repetidos.")
 
 
+def validar_quantidades(pedido):
+    if pedido.quantidades is None:
+        return [1] * len(pedido.produtos)
+    if len(pedido.quantidades) != len(pedido.produtos):
+        raise HTTPException(
+            status_code=422,
+            detail="Informe uma quantidade para cada produto.",
+        )
+    if any(
+        quantidade < 1 or quantidade > MAXIMUM_ORDER_ITEM_QUANTITY
+        for quantidade in pedido.quantidades
+    ):
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "Cada quantidade deve ser um inteiro entre 1 e "
+                f"{MAXIMUM_ORDER_ITEM_QUANTITY}."
+            ),
+        )
+    return pedido.quantidades
+
+
 def buscar_pedidos(cursor, pedido_id=None, vendedor_id=None):
-    consulta = """SELECT p.id, p.horario, p.pagamento, p.vendedorId, pp.produtoId
+    consulta = """SELECT p.id, p.horario, p.pagamento, p.vendedorId,
+                         pp.produtoId, pp.quantidade
                   FROM Pedido AS p
                   LEFT JOIN ProdutosPedido AS pp ON pp.pedidoId = p.id"""
     filtros = []
@@ -43,9 +68,10 @@ def buscar_pedidos(cursor, pedido_id=None, vendedor_id=None):
     pedidos = {}
     for linha in cursor.fetchall():
         if linha["id"] not in pedidos:
-            pedidos[linha["id"]] = pedido_dict(linha, [])
+            pedidos[linha["id"]] = pedido_dict(linha, [], [])
         if linha["produtoId"] is not None:
             pedidos[linha["id"]]["produtos"].append(linha["produtoId"])
+            pedidos[linha["id"]]["quantidades"].append(linha["quantidade"])
     return list(pedidos.values())
 
 
@@ -64,10 +90,14 @@ def validar_referencias(cursor, pedido):
         raise HTTPException(status_code=422, detail="Um ou mais produtos não existem.")
 
 
-def inserir_produtos(cursor, pedido_id, produtos):
+def inserir_produtos(cursor, pedido_id, produtos, quantidades):
     cursor.executemany(
-        "INSERT INTO ProdutosPedido (pedidoId, produtoId) VALUES (%s, %s)",
-        [(pedido_id, produto_id) for produto_id in produtos],
+        """INSERT INTO ProdutosPedido (pedidoId, produtoId, quantidade)
+           VALUES (%s, %s, %s)""",
+        [
+            (pedido_id, produto_id, quantidade)
+            for produto_id, quantidade in zip(produtos, quantidades)
+        ],
     )
 
 
@@ -121,6 +151,7 @@ def criar_pedido(
 ):
     validar_acesso_vendedor(user, pedido.vendedorId)
     validar_produtos(pedido.produtos)
+    quantidades = validar_quantidades(pedido)
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
@@ -135,8 +166,8 @@ def criar_pedido(
                 (pedido_id,),
             )
             linha = cursor.fetchone()
-            inserir_produtos(cursor, pedido_id, pedido.produtos)
-            return pedido_dict(linha, pedido.produtos)
+            inserir_produtos(cursor, pedido_id, pedido.produtos, quantidades)
+            return pedido_dict(linha, pedido.produtos, quantidades)
     except HTTPException:
         raise
     except Exception as erro:
@@ -151,6 +182,7 @@ def atualizar_pedido(
 ):
     validar_acesso_vendedor(user, pedido.vendedorId)
     validar_produtos(pedido.produtos)
+    quantidades = validar_quantidades(pedido)
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
@@ -168,7 +200,7 @@ def atualizar_pedido(
                 (pedido.pagamento, pedido.vendedorId, pedido_id),
             )
             cursor.execute("DELETE FROM ProdutosPedido WHERE pedidoId = %s", (pedido_id,))
-            inserir_produtos(cursor, pedido_id, pedido.produtos)
+            inserir_produtos(cursor, pedido_id, pedido.produtos, quantidades)
             pedidos = buscar_pedidos(cursor, pedido_id)
             return pedidos[0]
     except HTTPException:

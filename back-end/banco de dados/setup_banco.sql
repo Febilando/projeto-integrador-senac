@@ -46,6 +46,7 @@ CREATE TABLE Pedido (
 CREATE TABLE ProdutosPedido (
     pedidoId INT NOT NULL,
     produtoId INT NOT NULL,
+    quantidade INT NOT NULL DEFAULT 1,
     CONSTRAINT PK_ProdutosPedido PRIMARY KEY (pedidoId, produtoId),
     CONSTRAINT FK_ProdutosPedido_Pedido FOREIGN KEY (pedidoId)
         REFERENCES Pedido(id),
