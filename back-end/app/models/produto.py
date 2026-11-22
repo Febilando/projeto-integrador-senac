@@ -1,10 +1,52 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+MINIMUM_PRODUCT_NAME_LENGTH = 1
+MINIMUM_PRODUCT_STOCK = 0
+MINIMUM_RESTOCK_QUANTITY = 1
+MAXIMUM_PRODUCT_STOCK = 2_147_483_647
+MAXIMUM_PRODUCT_NAME_LENGTH = 150
+MAXIMUM_PRODUCT_IMAGE_LENGTH = 500
 
 
 class ProdutoEntrada(BaseModel):
-    nome: str = Field(min_length=1, max_length=150)
-    estoque: int = Field(ge=0)
-    img: str | None = Field(default=None, max_length=500)
+    nome: str = Field(
+        min_length=MINIMUM_PRODUCT_NAME_LENGTH,
+        max_length=MAXIMUM_PRODUCT_NAME_LENGTH,
+        description="Nome do produto.",
+        examples=["Caderno universitário"],
+    )
+    estoque: int = Field(
+        ge=MINIMUM_PRODUCT_STOCK,
+        le=MAXIMUM_PRODUCT_STOCK,
+        description="Quantidade atual em estoque.",
+        examples=[25],
+    )
+    img: str | None = Field(
+        default=None,
+        max_length=MAXIMUM_PRODUCT_IMAGE_LENGTH,
+        description="URL ou caminho da imagem do produto.",
+        examples=["/assets/caderno.jpg"],
+    )
+
+    @field_validator("nome", mode="before")
+    @classmethod
+    def normalizar_nome(cls, valor):
+        return valor.strip() if isinstance(valor, str) else valor
+
+
+class ProdutoResposta(BaseModel):
+    id: int = Field(description="Identificador único do produto.")
+    nome: str = Field(description="Nome do produto.")
+    estoque: int = Field(description="Quantidade atual em estoque.")
+    img: str | None = Field(
+        default=None,
+        description="URL ou caminho da imagem do produto.",
+    )
 
 class ReposicaoEntrada(BaseModel):
-    quantidade: int = Field(gt=0)
+    quantidade: int = Field(
+        ge=MINIMUM_RESTOCK_QUANTITY,
+        le=MAXIMUM_PRODUCT_STOCK,
+        description="Quantidade positiva a adicionar ao estoque.",
+        examples=[5],
+    )

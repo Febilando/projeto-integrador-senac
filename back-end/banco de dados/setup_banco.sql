@@ -1,10 +1,4 @@
 
-CREATE DATABASE IF NOT EXISTS GerenciadorPedidos
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_unicode_ci;
-USE GerenciadorPedidos;
-
-
 CREATE TABLE funcao (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE
