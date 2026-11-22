@@ -3,6 +3,7 @@ const FRONTEND_ROOT = new URL("../../", import.meta.url);
 const PAGE_PATHS = {
     dashboard: "index.html",
     pedidos: "pages/pedidos.html",
+    "novo-pedido": "pages/caixa.html",
     produtos: "pages/produtos.html",
     estatisticas: "pages/estatisticas.html",
     vendedores: "pages/vendedores.html",
