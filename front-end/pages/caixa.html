@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo pedido</title>
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/caixa.css">
+    <script type="module" src="../scripts/caixa.js"></script>
+</head>
+<body>
+    <header></header>
+
+    <main class="order-main">
+        <section class="order-heading">
+            <p class="order-eyebrow">Caixa</p>
+            <h1>Novo pedido</h1>
+        </section>
+
+        <div class="order-notice">
+            <span class="order-notice-icon" aria-hidden="true">i</span>
+            <p><strong>Atenção:</strong> o pedido será salvo na API após a confirmação.</p>
+        </div>
+        <p class="order-success" id="order-success" role="status" aria-live="polite" hidden></p>
+
+        <div class="order-layout">
+            <section class="table-card order-products">
+                <div class="table-card-heading">
+                    <div>
+                        <h2>Produtos</h2>
+                        <p>Selecione os itens para este pedido.</p>
+                    </div>
+                    <span class="table-count" id="products-count">0 adicionados</span>
+                </div>
+
+                <div class="table-toolbar order-toolbar">
+                    <div class="order-search" id="order-search">
+                        <span>Buscar por nome ou código de barras</span>
+                        <input
+                            id="product-search"
+                            class="input-text"
+                            type="search"
+                            placeholder="Digite o nome ou código de barras"
+                        >
+                        <div class="order-search-results" id="product-search-results" hidden></div>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table order-products-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Produto</th>
+                                <th scope="col">Estoque</th>
+                                <th scope="col">Preço unitário</th>
+                                <th scope="col">Quantidade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-list">
+                            <tr><td class="table-message" colspan="5">Nenhum produto adicionado.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <aside class="order-summary">
+                <h2>Resumo do pedido</h2>
+                <p class="order-summary-caption">Itens selecionados</p>
+                <p class="order-summary-empty" id="summary-empty">Nenhum item adicionado.</p>
+                <ul class="order-summary-items" id="summary-items"></ul>
+
+                <div class="order-summary-count">
+                    <span>Quantidade de unidades</span>
+                    <strong id="summary-quantity">0</strong>
+                </div>
+                <div class="order-total">
+                    <span>Valor total</span>
+                    <strong id="order-total">R$ 0,00</strong>
+                </div>
+
+                <fieldset class="payment-methods">
+                    <legend>Forma de pagamento</legend>
+                    <label class="payment-method">
+                        <input type="radio" name="pagamento" value="Pix">
+                        <img class="payment-method-icon" src="../assets/Senac_logo.svg.webp" alt="">
+                        <span>Pix</span>
+                    </label>
+                    <label class="payment-method">
+                        <input type="radio" name="pagamento" value="Cartão de crédito">
+                        <img class="payment-method-icon" src="../assets/Senac_logo.svg.webp" alt="">
+                        <span>Cartão de crédito</span>
+                    </label>
+                    <label class="payment-method">
+                        <input type="radio" name="pagamento" value="Cartão de débito">
+                        <img class="payment-method-icon" src="../assets/Senac_logo.svg.webp" alt="">
+                        <span>Cartão de débito</span>
+                    </label>
+                    <label class="payment-method">
+                        <input type="radio" name="pagamento" value="Dinheiro">
+                        <img class="payment-method-icon" src="../assets/Senac_logo.svg.webp" alt="">
+                        <span>Dinheiro</span>
+                    </label>
+                </fieldset>
+
+                <button class="order-submit" id="finalize-order" type="button" disabled>Finalizar pedido</button>
+            </aside>
+        </div>
+    </main>
+
+    <dialog class="order-confirmation-dialog" id="order-confirmation">
+        <h2>Deseja finalizar o pedido?</h2>
+        <p>Ao confirmar, o pedido será registrado e o caixa ficará pronto para um novo pedido.</p>
+        <p class="order-confirmation-feedback" id="order-confirmation-feedback" role="alert" aria-live="polite"></p>
+        <div class="order-confirmation-actions">
+            <button class="order-confirmation-cancel" id="cancel-order" type="button">Cancelar</button>
+            <button class="order-confirmation-confirm" id="confirm-order" type="button">Confirmar pedido</button>
+        </div>
+    </dialog>
+</body>
+</html>

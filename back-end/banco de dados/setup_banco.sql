@@ -26,7 +26,10 @@ CREATE TABLE Produto (
     nome VARCHAR(150) NOT NULL,
     estoque INT NOT NULL
         CHECK (estoque >= 0),
-    img VARCHAR(500) NULL
+    img VARCHAR(500) NULL,
+    cod_barras VARCHAR(100) NULL,
+    preco DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    CONSTRAINT UQ_Produto_cod_barras UNIQUE (cod_barras)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -43,6 +46,7 @@ CREATE TABLE Pedido (
 CREATE TABLE ProdutosPedido (
     pedidoId INT NOT NULL,
     produtoId INT NOT NULL,
+    quantidade INT NOT NULL DEFAULT 1,
     CONSTRAINT PK_ProdutosPedido PRIMARY KEY (pedidoId, produtoId),
     CONSTRAINT FK_ProdutosPedido_Pedido FOREIGN KEY (pedidoId)
         REFERENCES Pedido(id),

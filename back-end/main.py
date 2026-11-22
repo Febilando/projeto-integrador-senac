@@ -5,14 +5,16 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.bootstrap import garantir_administrador_inicial
 from app.config import settings
+from app.migracoes import executar_migracoes
 from app.routes.auth import router as auth_router
 from app.routes.pedidos import router as pedidos_router
 from app.routes.produtos import router as produtos_router
 from app.routes.usuarios import router as usuarios_router
 
-
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    # Temporário para preservar bancos existentes; remover ao final do projeto.
+    executar_migracoes()
     garantir_administrador_inicial()
     yield
 

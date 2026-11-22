@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from pydantic import BaseModel, Field, field_validator
 
 MINIMUM_PRODUCT_NAME_LENGTH = 1
@@ -6,6 +8,10 @@ MINIMUM_RESTOCK_QUANTITY = 1
 MAXIMUM_PRODUCT_STOCK = 2_147_483_647
 MAXIMUM_PRODUCT_NAME_LENGTH = 150
 MAXIMUM_PRODUCT_IMAGE_LENGTH = 500
+MAXIMUM_PRODUCT_BARCODE_LENGTH = 100
+MAXIMUM_PRODUCT_PRICE_DIGITS = 10
+PRODUCT_PRICE_DECIMAL_PLACES = 2
+MINIMUM_PRODUCT_PRICE = Decimal("0.00")
 
 
 class ProdutoEntrada(BaseModel):
@@ -27,11 +33,34 @@ class ProdutoEntrada(BaseModel):
         description="URL ou caminho da imagem do produto.",
         examples=["/assets/caderno.jpg"],
     )
+    cod_barras: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=MAXIMUM_PRODUCT_BARCODE_LENGTH,
+        description="Código de barras usado para localizar o produto.",
+        examples=["7891234567890"],
+    )
+    preco: Decimal = Field(
+        default=MINIMUM_PRODUCT_PRICE,
+        ge=MINIMUM_PRODUCT_PRICE,
+        max_digits=MAXIMUM_PRODUCT_PRICE_DIGITS,
+        decimal_places=PRODUCT_PRICE_DECIMAL_PLACES,
+        description="Preço unitário do produto em reais.",
+        examples=["24.90"],
+    )
 
     @field_validator("nome", mode="before")
     @classmethod
     def normalizar_nome(cls, valor):
         return valor.strip() if isinstance(valor, str) else valor
+
+    @field_validator("cod_barras", mode="before")
+    @classmethod
+    def normalizar_codigo_barras(cls, valor):
+        if not isinstance(valor, str):
+            return valor
+        codigo = valor.strip()
+        return codigo or None
 
 
 class ProdutoResposta(BaseModel):
@@ -41,6 +70,13 @@ class ProdutoResposta(BaseModel):
     img: str | None = Field(
         default=None,
         description="URL ou caminho da imagem do produto.",
+    )
+    cod_barras: str | None = Field(
+        default=None,
+        description="Código de barras do produto.",
+    )
+    preco: Decimal = Field(
+        description="Preço unitário do produto em reais.",
     )
 
 class ReposicaoEntrada(BaseModel):

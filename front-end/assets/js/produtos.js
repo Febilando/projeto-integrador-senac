@@ -2,6 +2,7 @@ import { apiRequest } from "./api.js";
 
 const PRODUCT_IMAGE_FALLBACK = "../assets/Senac_logo.svg.webp";
 const PRODUCT_NAME_MAX_LENGTH = 150;
+const PRODUCT_BARCODE_MAX_LENGTH = 100;
 const PRODUCT_IMAGE_MAX_LENGTH = 500;
 const MAXIMUM_STOCK_VALUE = 2_147_483_647;
 const MINIMUM_STOCK_VALUE = 0;
@@ -26,7 +27,9 @@ const productForm = document.querySelector("#product-form");
 const productDialogTitle = document.querySelector("#product-dialog-title");
 const productFormFeedback = document.querySelector("#product-form-feedback");
 const productNameInput = document.querySelector("#product-name");
+const productBarcodeInput = document.querySelector("#product-barcode");
 const productStockInput = document.querySelector("#product-stock");
+const productPriceInput = document.querySelector("#product-price");
 const productImageInput = document.querySelector("#product-image");
 const restockDialog = document.querySelector("#restock-dialog");
 const restockForm = document.querySelector("#restock-form");
@@ -40,6 +43,7 @@ let sortDirection = SORT_ASCENDING;
 let activeProductId = null;
 
 productNameInput.maxLength = PRODUCT_NAME_MAX_LENGTH;
+productBarcodeInput.maxLength = PRODUCT_BARCODE_MAX_LENGTH;
 productImageInput.maxLength = PRODUCT_IMAGE_MAX_LENGTH;
 productStockInput.max = String(MAXIMUM_STOCK_VALUE);
 restockQuantityInput.max = String(MAXIMUM_STOCK_VALUE);
@@ -49,6 +53,13 @@ function createCell(text, className = "") {
     cell.textContent = text;
     if (className) cell.className = className;
     return cell;
+}
+
+function formatPrice(value) {
+    return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    }).format(Number(value));
 }
 
 function getAvailability(product) {
@@ -108,6 +119,8 @@ function createProductRow(product) {
         imageCell,
         createCell(String(product.id), "table-id"),
         createCell(product.nome, "table-name"),
+        createCell(product.cod_barras || "—"),
+        createCell(formatPrice(product.preco)),
         createCell(`${product.estoque} unidades`),
         statusCell,
         actionsCell,
@@ -119,7 +132,7 @@ function createProductRow(product) {
 function showTableMessage(message) {
     const row = document.createElement("tr");
     const cell = createCell(message);
-    cell.colSpan = 6;
+    cell.colSpan = 8;
     cell.className = "table-message";
     row.append(cell);
     rowsElement.replaceChildren(row);
@@ -210,7 +223,9 @@ function openProductDialog(product = null) {
 
     if (product) {
         productNameInput.value = product.nome;
+        productBarcodeInput.value = product.cod_barras ?? "";
         productStockInput.value = String(product.estoque);
+        productPriceInput.value = String(product.preco);
         productImageInput.value = product.img ?? "";
     }
 
@@ -265,7 +280,9 @@ productForm.addEventListener("submit", async (event) => {
 
     const payload = {
         nome,
+        cod_barras: productBarcodeInput.value.trim() || null,
         estoque,
+        preco: Number(productPriceInput.value),
         img: productImageInput.value.trim() || null,
     };
     const isEditing = activeProductId !== null;

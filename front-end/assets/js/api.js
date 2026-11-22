@@ -7,9 +7,11 @@ const SAFE_HTTP_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const LOGIN_PAGE_URL = new URL("../../pages/login.html", import.meta.url);
 const API_FIELD_LABELS = {
     nome: "Nome",
+    cod_barras: "Código de barras",
     estoque: "Estoque",
     img: "Imagem",
     quantidade: "Quantidade",
+    preco: "Preço",
     senha: "Senha",
     id: "ID",
 };
