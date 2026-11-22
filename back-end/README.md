@@ -67,6 +67,13 @@ ao importar o arquivo `banco de dados/setup_banco.sql`.
 
 - `GET /usuarios`, `GET /usuarios/{id}`, `POST /usuarios`, `PUT /usuarios/{id}` e `DELETE /usuarios/{id}`
 - `GET /produtos`, `GET /produtos/{id}`, `POST /produtos`, `PUT /produtos/{id}` e `DELETE /produtos/{id}`
+- `GET /produtos/codigo-barras/{cod_barras}` (localiza um produto pelo código de barras)
 - `GET /produtos/estoque-baixo?limite=<valor>` (produtos com estoque menor ou igual ao limite; padrão configurável por `LOW_STOCK_LIMIT`)
 - `POST /produtos/{id}/reposicao` (soma a quantidade informada ao estoque)
 - `GET /pedidos`, `GET /pedidos/{id}`, `POST /pedidos`, `PUT /pedidos/{id}` e `DELETE /pedidos/{id}`
+
+grupo:
+Para não perdermos os bancos já existentes, o script será aplicado para modificar o banco `banco de dados/migracao_cod_barras.sql`.
+(podemos apagar esse script ao final do projeto)
+
+O código de barras é opcional e único quando informado. A API o inclui nas respostas de produto; o frontend decide se deve exibi-lo.
