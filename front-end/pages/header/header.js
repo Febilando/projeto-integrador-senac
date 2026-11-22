@@ -1,3 +1,5 @@
+// Script para carregar o conteúdo do header.html em todas as páginas.
+
 async function carregarCabecalho() {
     const scriptAtual = document.currentScript;
     const pastaHeader = new URL("./", scriptAtual.src);
