@@ -1,3 +1,5 @@
+import { apiRequest } from "../../assets/js/api.js";
+
 const SIDEBAR_FRAGMENT_URL = new URL("sidebar.html", import.meta.url);
 const FRONTEND_ROOT = new URL("../../", import.meta.url);
 const PAGE_PATHS = {
@@ -16,13 +18,19 @@ async function loadSidebar() {
     if (!sidebar) return;
 
     try {
-        const response = await fetch(SIDEBAR_FRAGMENT_URL);
+        const [response, session] = await Promise.all([
+            fetch(SIDEBAR_FRAGMENT_URL),
+            apiRequest("/auth/me"),
+        ]);
         if (!response.ok) {
             throw new Error("Não foi possível carregar a navegação lateral.");
         }
 
         sidebar.innerHTML = await response.text();
         const currentPath = window.location.pathname;
+        const isAdmin = session.usuario.funcao
+            .trim()
+            .toLocaleLowerCase("pt-BR") === "admin";
 
         for (const link of sidebar.querySelectorAll("[data-page-link]")) {
             const pageKey = link.dataset.pageLink;
@@ -32,6 +40,9 @@ async function loadSidebar() {
             const destination = new URL(pagePath, FRONTEND_ROOT);
             link.href = destination.href;
             link.setAttribute("aria-label", link.textContent.trim());
+            if (pageKey === "dashboard" && !isAdmin) {
+                link.hidden = true;
+            }
 
             if (destination.pathname === currentPath) {
                 link.classList.add("active");
