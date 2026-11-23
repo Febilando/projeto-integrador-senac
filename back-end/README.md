@@ -7,12 +7,13 @@ Na pasta `back-end`, crie o arquivo local de configuração e defina senhas pró
 Não se esqueça de definir as váriaveis de ambiente no .env
 (Se ainda não tiver um `.env`, utilize como base o `.env.example` e crie um `.env` para de suas senhas)
 
-Inicie a API e o MySQL:
+Na raiz do repositório, inicie o frontend, a API e o MySQL:
 ```powershell
-docker compose up --build
+docker compose up --build -d
 ```
 
-A API fica em <http://localhost:8000>.
+Frontend: <http://localhost:5500>.
+API: <http://localhost:8000>.
 Documentação interativa: <http://localhost:8000/docs>.
 
 O arquivo `.env` também pode configurar `CORS_ORIGINS` (origens separadas por vírgula),
@@ -22,7 +23,7 @@ Para autenticação, defina `AUTH_SESSION_SECRET` com uma chave aleatória de pe
 32 caracteres e mantenha `SESSION_COOKIE_SECURE=false` somente no desenvolvimento local.
 Em produção, use HTTPS e configure `SESSION_COOKIE_SECURE=true`.
 
-Para parar os serviços, use `Ctrl+C` e depois:
+Para parar os serviços, execute na raiz do repositório:
 
 ```powershell
 docker compose down
