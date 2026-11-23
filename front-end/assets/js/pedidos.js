@@ -25,6 +25,13 @@ const state = {
     selectedOrderId: null,
 };
 
+const paymentIcons = {
+    "Pix": "../assets/pix.png",
+    "Cartão de crédito": "../assets/cartao-de-credito.png",
+    "Cartão de débito": "../assets/cartao-de-debito .png",
+    "Dinheiro": "../assets/dinheiro.png",
+};
+
 const elements = {
     newOrderButton: document.getElementById("new-order-button"),
     refreshButton: document.getElementById("refresh-orders-button"),
@@ -71,6 +78,23 @@ function formatDateTime(rawDate) {
 
 function formatCurrency(value) {
     return currencyFormatter.format(Number(value) || 0);
+}
+
+function createPaymentBadge(payment) {
+    const badge = document.createElement("span");
+    badge.className = "payment-badge";
+
+    const iconSource = paymentIcons[payment];
+    if (iconSource) {
+        const icon = document.createElement("img");
+        icon.className = "payment-badge-icon";
+        icon.src = iconSource;
+        icon.alt = "";
+        badge.append(icon);
+    }
+
+    badge.append(document.createTextNode(payment || "-"));
+    return badge;
 }
 
 function getOrderTotalItems(order) {
@@ -209,9 +233,7 @@ function renderTable() {
         dateCell.textContent = formatDateTime(order.horario);
 
         const paymentCell = document.createElement("td");
-        const badge = document.createElement("span");
-        badge.className = "payment-badge";
-        badge.textContent = order.pagamento || "-";
+        const badge = createPaymentBadge(order.pagamento);
         paymentCell.appendChild(badge);
 
         const sellerCell = document.createElement("td");
@@ -251,7 +273,7 @@ function openOrderModal(order) {
     elements.modalTitle.textContent = `Pedido #${order.id}`;
     elements.modalDate.textContent = formatDateTime(order.horario);
     elements.modalSeller.textContent = getSellerLabel(order);
-    elements.modalPayment.textContent = order.pagamento || "-";
+    elements.modalPayment.replaceChildren(createPaymentBadge(order.pagamento));
     elements.modalTotal.textContent = formatCurrency(order.total);
     elements.modalItems.innerHTML = "";
 

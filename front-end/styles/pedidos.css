@@ -141,6 +141,7 @@ body {
 .payment-badge {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     padding: 4px 10px;
     border-radius: 20px;
     color: #234d98;
@@ -148,6 +149,13 @@ body {
     font-size: 12px;
     font-weight: 600;
     white-space: nowrap;
+}
+
+.payment-badge-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    object-fit: contain;
 }
 
 .order-total-cell {
