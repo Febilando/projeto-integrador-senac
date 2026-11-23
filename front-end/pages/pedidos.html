@@ -11,6 +11,7 @@
     <script src="header/header.js" defer></script>
     <script type="module" src="sidebar/sidebar.js"></script>
     <script type="module" src="../assets/js/auth-guard.js"></script>
+    <script type="module" src="../assets/js/pedidos.js"></script>
 </head>
 <body class="has-sidebar">
     <aside class="sidebar" id="app-sidebar" aria-label="Navegação do sistema"></aside>
@@ -21,34 +22,67 @@
             <div>
                 <p class="orders-eyebrow">Vendas</p>
                 <h1>Pedidos</h1>
-                <p>Consulte os pedidos registrados e suas formas de pagamento.</p>
+                <p>Consulte os pedidos registrados, formas de pagamento e itens vendidos.</p>
             </div>
-            <button class="orders-add-button" type="button" disabled>Novo pedido</button>
+            <div class="orders-heading-actions">
+                <button id="new-order-button" class="orders-add-button" type="button">
+                    Novo pedido
+                </button>
+                <button id="refresh-orders-button" class="orders-secondary-button" type="button">
+                    Atualizar lista
+                </button>
+            </div>
+        </section>
+
+        <section class="orders-summary" aria-label="Resumo dos pedidos exibidos">
+            <article class="summary-card">
+                <span class="summary-label">Pedidos exibidos</span>
+                <strong class="summary-value" id="summary-total-orders">0</strong>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Faturamento exibido</span>
+                <strong class="summary-value" id="summary-total-revenue">R$ 0,00</strong>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Ticket médio</span>
+                <strong class="summary-value" id="summary-avg-ticket">R$ 0,00</strong>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Itens vendidos</span>
+                <strong class="summary-value" id="summary-total-items">0</strong>
+            </article>
         </section>
 
         <section class="table-card">
             <div class="table-card-heading">
                 <div>
                     <h2>Pedidos registrados</h2>
-                    <p>Dados demonstrativos de vendas</p>
+                    <p id="orders-subtitle">Conectando à API...</p>
                 </div>
-                <span class="table-count">9 pedidos</span>
+                <span class="table-count" id="orders-count" aria-live="polite">Carregando...</span>
             </div>
 
             <div class="table-toolbar">
                 <div class="table-toolbar-actions">
-                    <div class="table-sort-controls">
+                    <div class="table-sort-controls" role="group" aria-label="Ordenação de pedidos">
                         <span>Ordenar:</span>
-                        <button type="button">Mais recentes</button>
-                        <button type="button">ID ↑</button>
+                        <button type="button" data-sort="recent" aria-pressed="true">Mais recentes</button>
+                        <button type="button" data-sort="id" aria-pressed="false">ID ↓</button>
+                        <button type="button" data-sort="total" aria-pressed="false">Maior valor</button>
                     </div>
+                    <select id="orders-payment-filter" class="orders-filter-select" aria-label="Filtrar por forma de pagamento">
+                        <option value="">Todos os pagamentos</option>
+                    </select>
                 </div>
                 <input
+                    id="orders-search"
                     class="input-text table-search"
                     type="search"
-                    placeholder="Pesquisar pedidos..."
+                    placeholder="Pesquisar por ID, vendedor, pagamento ou produto..."
                 >
             </div>
+
+            <p id="orders-feedback" class="orders-feedback" role="status" aria-live="polite" hidden></p>
 
             <div class="table-wrap">
                 <table class="data-table">
@@ -58,22 +92,70 @@
                             <th scope="col">Horário</th>
                             <th scope="col">Pagamento</th>
                             <th scope="col">Vendedor</th>
+                            <th scope="col">Itens</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr><td class="table-id">3001</td><td>21/11/2026 às 09:15</td><td>Cartão de crédito</td><td>Ana Souza</td></tr>
-                        <tr><td class="table-id">3002</td><td>21/11/2026 às 09:42</td><td>Pix</td><td>Carla Mendes</td></tr>
-                        <tr><td class="table-id">3003</td><td>21/11/2026 às 10:08</td><td>Cartão de débito</td><td>Ana Souza</td></tr>
-                        <tr><td class="table-id">3004</td><td>21/11/2026 às 10:36</td><td>Dinheiro</td><td>Felipe Costa</td></tr>
-                        <tr><td class="table-id">3005</td><td>21/11/2026 às 11:20</td><td>Pix</td><td>Giovana Reis</td></tr>
-                        <tr><td class="table-id">3006</td><td>21/11/2026 às 13:05</td><td>Cartão de crédito</td><td>Diego Alves</td></tr>
-                        <tr><td class="table-id">3007</td><td>21/11/2026 às 14:18</td><td>Cartão de débito</td><td>Eduarda Rocha</td></tr>
-                        <tr><td class="table-id">3008</td><td>21/11/2026 às 15:32</td><td>Pix</td><td>Isabela Pires</td></tr>
-                        <tr><td class="table-id">3009</td><td>21/11/2026 às 16:44</td><td>Dinheiro</td><td>Henrique Dias</td></tr>
+                    <tbody id="orders-table-body" aria-busy="true">
+                        <tr>
+                            <td colspan="7" class="table-message">Carregando pedidos...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </section>
     </main>
+
+    <dialog id="order-dialog" class="order-dialog" aria-labelledby="modal-order-title">
+        <div class="order-dialog-content">
+            <div class="order-dialog-heading">
+                <div>
+                    <p class="orders-eyebrow">Detalhes da venda</p>
+                    <h2 id="modal-order-title">Pedido #0</h2>
+                </div>
+                <button id="modal-close-button" class="dialog-close-button" type="button" aria-label="Fechar detalhes">&times;</button>
+            </div>
+
+            <div class="order-modal-meta">
+                <div>
+                    <span>Horário</span>
+                    <strong id="modal-order-date">-</strong>
+                </div>
+                <div>
+                    <span>Vendedor</span>
+                    <strong id="modal-order-seller">-</strong>
+                </div>
+                <div>
+                    <span>Pagamento</span>
+                    <strong id="modal-order-payment">-</strong>
+                </div>
+            </div>
+
+            <div class="order-modal-items-wrap">
+                <table class="order-items-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Produto</th>
+                            <th scope="col">Qtd.</th>
+                            <th scope="col">Unitário</th>
+                            <th scope="col">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-order-items"></tbody>
+                </table>
+            </div>
+
+            <div class="order-modal-footer">
+                <button id="modal-delete-button" class="order-action-button order-action-button--danger" type="button">
+                    Excluir pedido
+                </button>
+                <div class="order-modal-total">
+                    <span>Total do pedido</span>
+                    <strong id="modal-order-total">R$ 0,00</strong>
+                </div>
+            </div>
+        </div>
+    </dialog>
 </body>
 </html>

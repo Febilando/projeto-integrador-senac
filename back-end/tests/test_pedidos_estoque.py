@@ -131,3 +131,52 @@ class PedidosEstoqueTests(TestCase):
         self.assertEqual(produtos[31]["estoque"], 2)
         self.assertFalse(conexao._cursor.pedido_criado)
         self.assertTrue(conexao.rolled_back)
+
+
+class PedidosDetalhadosTests(TestCase):
+    def test_buscar_pedidos_detalhado_retorna_vendedor_itens_e_total(self):
+        class CursorDetalhado:
+            def __init__(self):
+                self.ultima_consulta = ""
+
+            def execute(self, consulta, parametros=()):
+                self.ultima_consulta = " ".join(consulta.split())
+
+            def fetchall(self):
+                return [
+                    {
+                        "id": 50,
+                        "horario": "2026-11-22 18:10:00",
+                        "pagamento": "Pix",
+                        "vendedorId": 7,
+                        "vendedorNome": "Ana Souza",
+                        "produtoId": 10,
+                        "quantidade": 2,
+                        "produtoNome": "Caderno",
+                        "produtoPreco": 15.50,
+                    },
+                    {
+                        "id": 50,
+                        "horario": "2026-11-22 18:10:00",
+                        "pagamento": "Pix",
+                        "vendedorId": 7,
+                        "vendedorNome": "Ana Souza",
+                        "produtoId": 12,
+                        "quantidade": 1,
+                        "produtoNome": "Caneta",
+                        "produtoPreco": 4.25,
+                    },
+                ]
+
+        cursor = CursorDetalhado()
+        resultado = pedidos.buscar_pedidos(cursor, detalhado=True)
+
+        self.assertIn("LEFT JOIN Usuario", cursor.ultima_consulta)
+        self.assertIn("LEFT JOIN Produto", cursor.ultima_consulta)
+        self.assertEqual(len(resultado), 1)
+        self.assertEqual(resultado[0]["vendedorNome"], "Ana Souza")
+        self.assertEqual(resultado[0]["produtos"], [10, 12])
+        self.assertEqual(resultado[0]["quantidades"], [2, 1])
+        self.assertEqual(len(resultado[0]["itens"]), 2)
+        self.assertEqual(resultado[0]["itens"][0]["subtotal"], 31.0)
+        self.assertEqual(resultado[0]["total"], 35.25)
