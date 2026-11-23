@@ -1,6 +1,6 @@
 import { apiRequest } from "./api.js";
 
-const DASHBOARD_URL = new URL("../../index.html", import.meta.url);
+const DASHBOARD_URL = new URL("../../pages/dashboard.html", import.meta.url);
 const MINIMUM_USER_ID = 1;
 
 const form = document.querySelector("#login-form");

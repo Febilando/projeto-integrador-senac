@@ -34,7 +34,7 @@ async function carregarCabecalho() {
 
     const frontendRoot = new URL("../../", pastaHeader);
     const homeLink = document.querySelector("header .marca a");
-    if (homeLink) homeLink.href = new URL("index.html", frontendRoot).href;
+    if (homeLink) homeLink.href = new URL("pages/pedidos.html", frontendRoot).href;
 
     const lupa = document.querySelector("header form img");
 
