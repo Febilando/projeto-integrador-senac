@@ -1,5 +1,7 @@
 import { apiRequest } from "./api.js";
 
+const ORDERS_PAGE_URL = new URL("../../pages/pedidos.html", import.meta.url);
+
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -360,6 +362,13 @@ function synchronizeMonth(monthKey) {
 
 async function loadDashboard() {
     try {
+        const session = await apiRequest("/auth/me");
+        const userRole = session.usuario.funcao.trim().toLocaleLowerCase("pt-BR");
+        if (userRole !== "admin") {
+            window.location.replace(ORDERS_PAGE_URL.href);
+            return;
+        }
+
         const [loadedOrders, loadedProducts] = await Promise.all([
             apiRequest("/pedidos?detalhado=true"),
             apiRequest("/produtos"),
