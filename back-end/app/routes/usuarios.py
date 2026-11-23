@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from app.auth import require_admin
 from app.conexao import conectar_banco
-from app.models.usuario import UsuarioEntrada
+from app.models.usuario import UsuarioAtualizacao, UsuarioEntrada
 from app.security import hash_senha
 
 router = APIRouter(
@@ -18,6 +18,7 @@ def usuario_dict(linha):
         "id": linha["id"],
         "nome": linha["nome"],
         "funcao": linha["funcao"],
+        "funcaoNome": linha.get("funcaoNome"),
         "status": linha["status"],
     }
 
@@ -33,10 +34,26 @@ def listar_usuarios():
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
-            cursor.execute("SELECT id, nome, funcao, status FROM Usuario ORDER BY id")
+            cursor.execute(
+                """SELECT u.id, u.nome, u.funcao, f.nome AS funcaoNome, u.status
+                   FROM Usuario AS u
+                   INNER JOIN funcao AS f ON f.id = u.funcao
+                   ORDER BY u.id"""
+            )
             return [usuario_dict(linha) for linha in cursor.fetchall()]
     except Exception as erro:
         raise HTTPException(status_code=500, detail="Erro ao listar usuários.") from erro
+
+
+@router.get("/funcoes")
+def listar_funcoes():
+    try:
+        with conectar_banco() as conexao:
+            cursor = conexao.cursor()
+            cursor.execute("SELECT id, nome FROM funcao ORDER BY id")
+            return cursor.fetchall()
+    except Exception as erro:
+        raise HTTPException(status_code=500, detail="Erro ao listar funções.") from erro
 
 
 @router.get("/{usuario_id}")
@@ -45,7 +62,10 @@ def buscar_usuario(usuario_id: int):
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
             cursor.execute(
-                "SELECT id, nome, funcao, status FROM Usuario WHERE id = %s",
+                """SELECT u.id, u.nome, u.funcao, f.nome AS funcaoNome, u.status
+                   FROM Usuario AS u
+                   INNER JOIN funcao AS f ON f.id = u.funcao
+                   WHERE u.id = %s""",
                 (usuario_id,),
             )
             linha = cursor.fetchone()
@@ -71,7 +91,10 @@ def criar_usuario(usuario: UsuarioEntrada):
             )
             usuario_id = cursor.lastrowid
             cursor.execute(
-                "SELECT id, nome, funcao, status FROM Usuario WHERE id = %s",
+                """SELECT u.id, u.nome, u.funcao, f.nome AS funcaoNome, u.status
+                   FROM Usuario AS u
+                   INNER JOIN funcao AS f ON f.id = u.funcao
+                   WHERE u.id = %s""",
                 (usuario_id,),
             )
             return usuario_dict(cursor.fetchone())
@@ -82,7 +105,7 @@ def criar_usuario(usuario: UsuarioEntrada):
 
 
 @router.put("/{usuario_id}")
-def atualizar_usuario(usuario_id: int, usuario: UsuarioEntrada):
+def atualizar_usuario(usuario_id: int, usuario: UsuarioAtualizacao):
     try:
         with conectar_banco() as conexao:
             cursor = conexao.cursor()
@@ -90,14 +113,31 @@ def atualizar_usuario(usuario_id: int, usuario: UsuarioEntrada):
             cursor.execute("SELECT id FROM Usuario WHERE id = %s", (usuario_id,))
             if cursor.fetchone() is None:
                 raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+            if usuario.senha is None:
+                cursor.execute(
+                    """UPDATE Usuario
+                       SET nome = %s, funcao = %s, status = %s
+                       WHERE id = %s""",
+                    (usuario.nome, usuario.funcao, usuario.status, usuario_id),
+                )
+            else:
+                cursor.execute(
+                    """UPDATE Usuario
+                       SET nome = %s, senha = %s, funcao = %s, status = %s
+                       WHERE id = %s""",
+                    (
+                        usuario.nome,
+                        hash_senha(usuario.senha),
+                        usuario.funcao,
+                        usuario.status,
+                        usuario_id,
+                    ),
+                )
             cursor.execute(
-                """UPDATE Usuario
-                   SET nome = %s, senha = %s, funcao = %s, status = %s
-                   WHERE id = %s""",
-                (usuario.nome, hash_senha(usuario.senha), usuario.funcao, usuario.status, usuario_id),
-            )
-            cursor.execute(
-                "SELECT id, nome, funcao, status FROM Usuario WHERE id = %s",
+                """SELECT u.id, u.nome, u.funcao, f.nome AS funcaoNome, u.status
+                   FROM Usuario AS u
+                   INNER JOIN funcao AS f ON f.id = u.funcao
+                   WHERE u.id = %s""",
                 (usuario_id,),
             )
             return usuario_dict(cursor.fetchone())

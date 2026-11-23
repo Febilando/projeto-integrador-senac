@@ -11,6 +11,7 @@
     <script src="header/header.js" defer></script>
     <script type="module" src="sidebar/sidebar.js"></script>
     <script type="module" src="../assets/js/auth-guard.js"></script>
+    <script type="module" src="../assets/js/vendedores.js"></script>
 </head>
 <body class="has-sidebar">
     <aside class="sidebar" id="app-sidebar" aria-label="Navegação do sistema"></aside>
@@ -23,57 +24,83 @@
                 <h1>Vendedores</h1>
                 <p>Gerencie os usuários e suas funções no sistema.</p>
             </div>
-            <button class="users-add-button" type="button" disabled>Novo usuário</button>
+            <div class="users-heading-actions">
+                <button class="users-refresh-button" id="users-refresh" type="button">Atualizar lista</button>
+                <button class="users-add-button" id="new-user" type="button" disabled>Novo usuário</button>
+            </div>
         </section>
 
         <section class="table-card">
             <div class="table-card-heading">
                 <div>
                     <h2>Usuários cadastrados</h2>
-                    <p>Dados de acesso demonstrativos</p>
+                    <p id="users-subtitle">Conectando à API...</p>
                 </div>
-                <span class="table-count">9 usuários</span>
+                <span class="table-count" id="users-count" aria-live="polite">Carregando...</span>
             </div>
 
             <div class="table-toolbar">
                 <div class="table-toolbar-actions">
-                    <div class="table-sort-controls">
+                    <div class="table-sort-controls" role="group" aria-label="Ordenar usuários">
                         <span>Ordenar:</span>
-                        <button type="button">Alfabética ↑</button>
-                        <button type="button">ID ↑</button>
+                        <button type="button" data-sort="nome" data-label="Alfabética" aria-pressed="true">Alfabética ↑</button>
+                        <button type="button" data-sort="id" data-label="ID" aria-pressed="false">ID ↑</button>
                     </div>
                 </div>
                 <input
+                    id="users-search"
                     class="input-text table-search"
                     type="search"
                     placeholder="Pesquisar usuários..."
+                    aria-label="Pesquisar usuários"
                 >
             </div>
 
+            <p class="users-feedback" id="users-feedback" role="status" aria-live="polite"></p>
+
             <div class="table-wrap">
-                <table class="data-table">
+                <table class="data-table users-table">
                     <thead>
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Nome</th>
-                            <th scope="col">Senha</th>
                             <th scope="col">Função</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr><td class="table-id">2001</td><td class="table-name">Ana Souza</td><td>••••••••</td><td>Administrador</td></tr>
-                        <tr><td class="table-id">2002</td><td class="table-name">Bruno Lima</td><td>••••••••</td><td>Vendedor</td></tr>
-                        <tr><td class="table-id">2003</td><td class="table-name">Carla Mendes</td><td>••••••••</td><td>Vendedor</td></tr>
-                        <tr><td class="table-id">2004</td><td class="table-name">Diego Alves</td><td>••••••••</td><td>Vendedor</td></tr>
-                        <tr><td class="table-id">2005</td><td class="table-name">Eduarda Rocha</td><td>••••••••</td><td>Vendedor</td></tr>
-                        <tr><td class="table-id">2006</td><td class="table-name">Felipe Costa</td><td>••••••••</td><td>Vendedor</td></tr>
-                        <tr><td class="table-id">2007</td><td class="table-name">Giovana Reis</td><td>••••••••</td><td>Vendedor</td></tr>
-                        <tr><td class="table-id">2008</td><td class="table-name">Henrique Dias</td><td>••••••••</td><td>Administrador</td></tr>
-                        <tr><td class="table-id">2009</td><td class="table-name">Isabela Pires</td><td>••••••••</td><td>Vendedor</td></tr>
+                    <tbody id="users-rows" aria-busy="true">
+                        <tr><td class="table-message" colspan="5">Carregando usuários...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
     </main>
+
+    <dialog class="user-dialog" id="user-dialog" aria-labelledby="user-dialog-title">
+        <form class="user-form" id="user-form">
+            <div class="user-dialog-heading">
+                <h2 id="user-dialog-title">Novo usuário</h2>
+                <button class="user-dialog-close" type="button" data-close-user-dialog aria-label="Fechar formulário">×</button>
+            </div>
+            <p class="user-form-feedback" id="user-form-feedback" role="alert" aria-live="polite"></p>
+
+            <label for="user-name">Nome</label>
+            <input class="input-text" id="user-name" name="nome" type="text" maxlength="150" autocomplete="name" required>
+
+            <label for="user-password">Senha <span id="password-required-note">(mínimo de 8 caracteres)</span></label>
+            <input class="input-text" id="user-password" name="senha" type="password" minlength="8" maxlength="128" autocomplete="new-password">
+            <p class="user-password-hint" id="user-password-hint">A senha será armazenada com proteção no servidor.</p>
+
+            <label for="user-role">Função</label>
+            <select class="input-text" id="user-role" name="funcao" required></select>
+            <p class="user-password-hint" id="user-role-hint" hidden>A função do seu próprio usuário não pode ser alterada.</p>
+
+            <div class="user-form-actions">
+                <button class="user-cancel-button" type="button" data-close-user-dialog>Cancelar</button>
+                <button id="save-user" type="submit">Salvar usuário</button>
+            </div>
+        </form>
+    </dialog>
 </body>
 </html>
