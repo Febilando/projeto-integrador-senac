@@ -18,6 +18,13 @@ body {
     margin-bottom: 24px;
 }
 
+.orders-heading-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
 .orders-eyebrow {
     margin-bottom: 6px;
     color: #5b7ba5;
@@ -34,6 +41,285 @@ body {
     cursor: not-allowed;
 }
 
+.orders-secondary-button {
+    border: 1px solid #d0d5dd;
+    color: #344054;
+    background: #ffffff;
+}
+
+.orders-secondary-button:hover {
+    background: #f9fafb;
+}
+
+.orders-secondary-button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.orders-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px;
+    border: 1px solid #e4e7ec;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgb(31 41 55 / 4%);
+}
+
+.summary-label {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.summary-value {
+    color: #1f2937;
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.table-sort-controls button[aria-pressed="true"] {
+    border-color: #5b9bda;
+    color: #234d98;
+    background: #eff6ff;
+}
+
+.orders-filter-select {
+    min-height: 38px;
+    padding: 0 12px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    color: #344054;
+    background: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.orders-filter-select:focus {
+    border-color: #5b9bda;
+}
+
+.orders-feedback {
+    margin: 0 24px 16px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.orders-feedback.is-error {
+    border: 1px solid #fecdca;
+    color: #b42318;
+    background: #fef3f2;
+}
+
+.orders-feedback.is-success {
+    border: 1px solid #abefc6;
+    color: #067647;
+    background: #ecfdf3;
+}
+
+.data-table {
+    min-width: 780px;
+}
+
+.table-message {
+    height: 96px;
+    color: #667085;
+    text-align: center;
+}
+
+.payment-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: #234d98;
+    background: #eff6ff;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.order-total-cell {
+    color: #1f2937;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.order-action-button {
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid #d0d5dd;
+    color: #344054;
+    background: #ffffff;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.order-action-button:hover {
+    background: #f9fafb;
+}
+
+.order-action-button--danger {
+    min-height: 40px;
+    padding: 0 16px;
+    border-color: #fecdca;
+    color: #b42318;
+    background: #ffffff;
+    font-size: 13px;
+}
+
+.order-action-button--danger:hover {
+    background: #fef3f2;
+}
+
+.order-action-button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.order-dialog {
+    width: min(100% - 32px, 640px);
+    max-height: min(90vh, 760px);
+    margin: auto;
+    padding: 0;
+    overflow-y: auto;
+    border: 1px solid #e4e7ec;
+    border-radius: 14px;
+    color: #1f2937;
+    background: #ffffff;
+    box-shadow: 0 24px 64px rgb(16 24 40 / 24%);
+}
+
+.order-dialog::backdrop {
+    background: rgb(16 24 40 / 50%);
+    backdrop-filter: blur(2px);
+}
+
+.order-dialog-content {
+    display: grid;
+    gap: 20px;
+    padding: 24px;
+}
+
+.order-dialog-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.order-dialog-heading h2 {
+    color: #1f2937;
+    font-size: 20px;
+    font-weight: 650;
+}
+
+.dialog-close-button {
+    width: 38px;
+    min-height: 38px;
+    padding: 0;
+    border: 1px solid #d0d5dd;
+    color: #344054;
+    background: #ffffff;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.dialog-close-button:hover {
+    background: #f9fafb;
+}
+
+.order-modal-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid #eaecf0;
+    border-radius: 10px;
+    background: #f9fafb;
+}
+
+.order-modal-meta span {
+    display: block;
+    margin-bottom: 4px;
+    color: #667085;
+    font-size: 12px;
+}
+
+.order-modal-meta strong {
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.order-modal-items-wrap {
+    overflow-x: auto;
+    border: 1px solid #eaecf0;
+    border-radius: 10px;
+}
+
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    text-align: left;
+}
+
+.order-items-table th {
+    padding: 10px 14px;
+    color: #667085;
+    background: #f9fafb;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.order-items-table td {
+    padding: 11px 14px;
+    border-top: 1px solid #f2f4f7;
+    color: #344054;
+    font-variant-numeric: tabular-nums;
+}
+
+.order-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.order-modal-total {
+    text-align: right;
+}
+
+.order-modal-total span {
+    display: block;
+    color: #667085;
+    font-size: 12px;
+}
+
+.order-modal-total strong {
+    color: #234d98;
+    font-size: 22px;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 960px) {
+    .orders-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 640px) {
     .orders-main {
         padding: 28px 16px 40px;
@@ -47,5 +333,35 @@ body {
 
     .orders-heading h1 {
         font-size: 24px;
+    }
+
+    .orders-heading-actions {
+        width: 100%;
+    }
+
+    .orders-heading-actions button {
+        flex: 1;
+    }
+
+    .orders-feedback {
+        margin: 0 16px 12px;
+    }
+
+    .orders-summary,
+    .order-modal-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .order-dialog-content {
+        padding: 20px;
+    }
+
+    .order-modal-footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .order-modal-total {
+        text-align: left;
     }
 }

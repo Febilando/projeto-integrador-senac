@@ -47,11 +47,22 @@ def validar_quantidades(pedido):
     return pedido.quantidades
 
 
-def buscar_pedidos(cursor, pedido_id=None, vendedor_id=None):
-    consulta = """SELECT p.id, p.horario, p.pagamento, p.vendedorId,
-                         pp.produtoId, pp.quantidade
-                  FROM Pedido AS p
-                  LEFT JOIN ProdutosPedido AS pp ON pp.pedidoId = p.id"""
+def buscar_pedidos(cursor, pedido_id=None, vendedor_id=None, detalhado=False):
+    if detalhado:
+        consulta = """SELECT p.id, p.horario, p.pagamento, p.vendedorId,
+                             u.nome AS vendedorNome,
+                             pp.produtoId, pp.quantidade,
+                             pr.nome AS produtoNome, pr.preco AS produtoPreco
+                      FROM Pedido AS p
+                      LEFT JOIN Usuario AS u ON u.id = p.vendedorId
+                      LEFT JOIN ProdutosPedido AS pp ON pp.pedidoId = p.id
+                      LEFT JOIN Produto AS pr ON pr.id = pp.produtoId"""
+    else:
+        consulta = """SELECT p.id, p.horario, p.pagamento, p.vendedorId,
+                             pp.produtoId, pp.quantidade
+                      FROM Pedido AS p
+                      LEFT JOIN ProdutosPedido AS pp ON pp.pedidoId = p.id"""
+
     filtros = []
     parametros = []
     if pedido_id is not None:
@@ -68,10 +79,31 @@ def buscar_pedidos(cursor, pedido_id=None, vendedor_id=None):
     pedidos = {}
     for linha in cursor.fetchall():
         if linha["id"] not in pedidos:
-            pedidos[linha["id"]] = pedido_dict(linha, [], [])
+            pedido = pedido_dict(linha, [], [])
+            if detalhado:
+                pedido["vendedorNome"] = linha["vendedorNome"]
+                pedido["itens"] = []
+                pedido["total"] = 0.0
+            pedidos[linha["id"]] = pedido
+
         if linha["produtoId"] is not None:
             pedidos[linha["id"]]["produtos"].append(linha["produtoId"])
             pedidos[linha["id"]]["quantidades"].append(linha["quantidade"])
+            if detalhado:
+                preco_unitario = float(linha["produtoPreco"] or 0)
+                subtotal = round(preco_unitario * linha["quantidade"], 2)
+                pedidos[linha["id"]]["itens"].append(
+                    {
+                        "produtoId": linha["produtoId"],
+                        "nome": linha["produtoNome"] or f"Produto #{linha['produtoId']}",
+                        "preco": preco_unitario,
+                        "quantidade": linha["quantidade"],
+                        "subtotal": subtotal,
+                    }
+                )
+                pedidos[linha["id"]]["total"] = round(
+                    pedidos[linha["id"]]["total"] + subtotal, 2
+                )
     return list(pedidos.values())
 
 
@@ -141,7 +173,10 @@ def validar_acesso_vendedor(user, vendedor_id):
 
 
 @router.get("")
-def listar_pedidos(user: dict = Depends(get_current_user)):
+def listar_pedidos(
+    detalhado: bool = False,
+    user: dict = Depends(get_current_user),
+):
     try:
         with conectar_banco() as conexao:
             vendedor_id = (
@@ -149,13 +184,21 @@ def listar_pedidos(user: dict = Depends(get_current_user)):
                 if user["funcao"].strip().lower() == ADMIN_ROLE
                 else user["id"]
             )
-            return buscar_pedidos(conexao.cursor(), vendedor_id=vendedor_id)
+            return buscar_pedidos(
+                conexao.cursor(),
+                vendedor_id=vendedor_id,
+                detalhado=detalhado,
+            )
     except Exception as erro:
         raise HTTPException(status_code=500, detail="Erro ao listar pedidos.") from erro
 
 
 @router.get("/{pedido_id}")
-def buscar_pedido(pedido_id: int, user: dict = Depends(get_current_user)):
+def buscar_pedido(
+    pedido_id: int,
+    detalhado: bool = False,
+    user: dict = Depends(get_current_user),
+):
     try:
         with conectar_banco() as conexao:
             vendedor_id = (
@@ -164,7 +207,10 @@ def buscar_pedido(pedido_id: int, user: dict = Depends(get_current_user)):
                 else user["id"]
             )
             pedidos = buscar_pedidos(
-                conexao.cursor(), pedido_id, vendedor_id=vendedor_id
+                conexao.cursor(),
+                pedido_id,
+                vendedor_id=vendedor_id,
+                detalhado=detalhado,
             )
             if not pedidos:
                 raise HTTPException(status_code=404, detail="Pedido não encontrado.")
