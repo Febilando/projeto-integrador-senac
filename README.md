@@ -1,70 +1,107 @@
 # Gerenciador de Pedidos
+Sistema web para vendas e gerenciamento de pedidos, produtos, estoque e usuários e uma API desenvolvida com FastAPI.
 
-## Grupo 38:
-* Felipe Xavier Marques 
-* Henrique Xavier Marques 
-* João Pedro Costa
-* Leonardo Dantas Albano 
-* Matheus de Castro Souza 
-* Pedro Braz Leite 
-* Thiago Malta Magalhães 
-* Wagner Matos Costa
+## Grupo 38
+
+- Felipe Xavier Marques
+- Henrique Xavier Marques
+- João Pedro Costa
+- Leonardo Dantas Albano
+- Matheus de Castro Souza
+- Pedro Braz Leite
+- Thiago Malta Magalhães
+- Wagner Matos Costa
 
 
-### Importante:
 
-Na pasta `back-end`, crie o arquivo local de configuração e defina senhas próprias nele:
+## Configuração do ambiente
 
-Defina as váriaveis de ambiente no .env
+Na pasta back-end, utilize o arquivo .env.example para criar o seu .env:
 
-(Se ainda não tiver um `.env`, utilize como base o `.env.example` e crie um `.env`)
-
+```powershell
+cd .\back-end\
+Copy-Item .env.example .env
+```
 
 ## Primeiro administrador
 
-Ao iniciar, a API cria automaticamente um administrador se ainda não
-existir nenhum. 
+Ao iniciar, a API cria automaticamente um administrador somente se ainda não
+existir nenhum usuário com a função `admin`.
 
-O ID de login é `100`; defina a senha inicial no `.env` (é uma solução para esse contexto acadêmico, sabemos que não é segura)
+O administrador inicial usa o ID `100`. Acesse
+<http://localhost:5500/> e entre com esse ID e o valor definido em
+`INITIAL_ADMIN_PASSWORD` no arquivo `.env`.
 
-Acesse <http://localhost:5500/> com ID `100` e a senha configurada.
+## Execução com Docker (recomendado)
 
+### Requisitos
 
-## Execução com Docker
-Na raiz do repositório, inicie o frontend, a API e o MySQL pelo comando:
+- Docker Desktop.
+- Portas `5500`, `8000` disponíveis.
+
+### Opção 1: usar um MySQL local
+
+Configure `DB_HOST` e `DB_PORT` no `back-end\.env` para apontar para o MySQL
+local. Quando o banco estiver em execução na máquina, use na raiz do repositório:
 
 ```powershell
 docker compose up --build
 ```
 
-Frontend: <http://localhost:5500>.
+As variáveis
+`MYSQL_DATABASE`, `MYSQL_USER` e `MYSQL_PASSWORD`
+devem estar configuradas no `back-end\.env`
 
-API: <http://localhost:8000>.
+Nesse modo, a API usa o banco local.
 
-Documentação interativa: <http://localhost:8000/docs>.
+URLs disponíveis:
 
-Para parar o container, pressione `Ctrl+C` para parar a execução e em seguida, a partir da raiz do repositório digite:
+- Frontend: <http://localhost:5500>
+- API: <http://localhost:8000>
+- Documentação: <http://localhost:8000/docs>
+
+### Opção 2: usar o MySQL do Docker
+
+Na raiz do repositório, inicie o frontend, a API e o MySQL juntos:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.db.yml up --build
+```
+
+Nesse modo, o Docker cria o banco MySQL na porta `3306`. As credenciais irão seguir o 
+`MYSQL_DATABASE`, `MYSQL_USER` e `MYSQL_PASSWORD`,
+que devem estar configuradas no `back-end\.env`
+
+URLs disponíveis:
+
+- Frontend: <http://localhost:5500>
+- API: <http://localhost:8000>
+- Documentação: <http://localhost:8000/docs>
+
+Para encerrar os serviços executados pelo Compose padrão:
 
 ```powershell
 docker compose down
 ```
 
-para encerrar os containers.
+Para encerrar todos os serviços do modo com banco no Docker:
 
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.db.yml down
+```
 
 ## Execução local
 
-#### Requisitos para execução local
+### Requisitos
+
 - Python 3.11 ou superior.
-- MySQL 8.4 ou superior localmente, ou Docker para iniciar o banco do projeto.
-- Navegador moderno com suporte a JavaScript.
-- Portas `5500` e `8000` disponíveis.
+- MySQL 8.4 ou superior em execução local.
+- Portas `5500`, `8000` disponíveis.
 
+### Preparar o ambiente Python
 
-### Preparar o backend
-
-A partir da raiz do repositório, crie o ambiente virtual e instale
-as dependências:
+Na raiz do repositório, crie e ative o ambiente virtual e instale as
+dependências:
 
 ```powershell
 cd .\back-end\
@@ -73,25 +110,11 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-Defina as váriaveis de ambiente no .env
-(Se ainda não tiver um `.env`, utilize como base o `.env.example` e crie um `.env` para de suas senhas)
+Configure o banco local no `back-end\.env`, incluindo `DB_HOST=localhost`,
+`DB_PORT=3306`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`,
+`INITIAL_ADMIN_PASSWORD` e `AUTH_SESSION_SECRET`.
 
-#### Iniciar o MySQL
-
-Se não tiver um MySQL local já configurado com as credenciais do `.env`, abra
-um terminal na raiz do repositório e inicie somente o banco pelo Docker Compose:
-
-```powershell
-docker compose up -d db
-```
-
-O serviço usa `back-end\.env` e inicializa o banco com o script SQL do projeto.
-
-Se já houver um MySQL em execução, pule este passo e confirme que o `.env` contém as credenciais correspondentes.
-
-### Iniciar a API e o frontend
-
-Em um terminal, na pasta `back-end`, ative o ambiente virtual e inicie a API:
+Depois, volte para `back-end` e inicie a API em um terminal:
 
 ```powershell
 cd .\back-end\
@@ -99,39 +122,60 @@ cd .\back-end\
 uvicorn main:app --reload
 ```
 
-Em outro terminal, na raiz do repositório, inicie o servidor estático:
+Em outro terminal, na raiz do repositório, inicie o frontend estático:
 
 ```powershell
 cd .\front-end\
 python -m http.server 5500
 ```
 
-Frontend: <http://localhost:5500>.
-API: <http://localhost:8000>.
-Documentação interativa: <http://localhost:8000/docs>.
+URLs disponíveis:
 
-Para encerrar, use `Ctrl+C` nos terminais da API e do frontend.
+- Frontend: <http://localhost:5500>
+- API: <http://localhost:8000>
+- Documentação: <http://localhost:8000/docs>
 
-Se iniciou o
-MySQL pelo Compose, pare o banco a partir da raiz do projeto:
+Para encerrar a API e o frontend, pressione `Ctrl+C` nos respectivos terminais.
 
-```powershell
-docker compose stop db
-```
+## Permissões
 
-### Permissões
-O dashboard, lista completa de pedidos e produtos (incluindo edição e reposição) só podem ser acessados por administradores.
+- Apenas administradores acessam o dashboard, o gerenciamento de usuários e as
+  operações administrativas de produtos e pedidos.
+- Vendedores acessam seus próprios pedidos e podem criar novos pedidos.
+- Vendedores podem consultar produtos, mas não podem editá-los ou repor estoque.
 
-Vendedores tem acesso a seus próprios pedidos, lista de produtos (sem edição) e página de novo pedido.
+## Principais rotas
 
+### Autenticação
 
-## Rotas
+- `POST /auth/login`
+- `GET /auth/me`
+- `POST /auth/logout`
 
-- `GET /usuarios`, `GET /usuarios/{id}`, `POST /usuarios`, `PUT /usuarios/{id}` e `DELETE /usuarios/{id}`
-- `GET /produtos?busca=<termo>` (busca por código de barras exato ou parte do nome; sem termo, lista todos)
-- `GET /produtos/{id}`, `POST /produtos`, `PUT /produtos/{id}` e `DELETE /produtos/{id}`
-- `GET /produtos/codigo-barras/{cod_barras}` (busca pelo código de barras)
-- `GET /produtos/estoque-baixo?limite=<valor>` (produtos com estoque menor ou igual ao limite; padrão configurável por `LOW_STOCK_LIMIT`)
-- `POST /produtos/{id}/reposicao` (soma a quantidade informada ao estoque)
-- `GET /pedidos`, `GET /pedidos/{id}`, `POST /pedidos`, `PUT /pedidos/{id}` e `DELETE /pedidos/{id}`
+### Usuários
 
+- `GET /usuarios`
+- `GET /usuarios/funcoes`
+- `GET /usuarios/{usuario_id}`
+- `POST /usuarios`
+- `PUT /usuarios/{usuario_id}`
+- `DELETE /usuarios/{usuario_id}`
+
+### Produtos
+
+- `GET /produtos?busca=<termo>`
+- `GET /produtos/{produto_id}`
+- `GET /produtos/codigo-barras/{cod_barras}`
+- `GET /produtos/estoque-baixo?limite=<valor>`
+- `POST /produtos`
+- `PUT /produtos/{produto_id}`
+- `POST /produtos/{produto_id}/reposicao`
+- `DELETE /produtos/{produto_id}`
+
+### Pedidos
+
+- `GET /pedidos`
+- `GET /pedidos/{pedido_id}`
+- `POST /pedidos`
+- `PUT /pedidos/{pedido_id}`
+- `DELETE /pedidos/{pedido_id}`
