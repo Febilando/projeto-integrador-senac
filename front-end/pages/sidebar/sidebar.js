@@ -7,7 +7,6 @@ const PAGE_PATHS = {
     pedidos: "pages/pedidos.html",
     "novo-pedido": "pages/caixa.html",
     produtos: "pages/produtos.html",
-    estatisticas: "pages/estatisticas.html",
     vendedores: "pages/vendedores.html",
 };
 
