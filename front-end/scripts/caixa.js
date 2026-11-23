@@ -3,6 +3,7 @@ import { apiRequest } from "../assets/js/api.js";
 const EMPTY_MESSAGE = "Nenhum produto encontrado.";
 const MAXIMUM_STOCK_VALUE = 2_147_483_647;
 
+const backLink = document.querySelector("#back-link");
 const productsList = document.querySelector("#products-list");
 const productsCount = document.querySelector("#products-count");
 const orderSearch = document.querySelector("#order-search");
@@ -450,3 +451,21 @@ confirmationDialog.addEventListener("cancel", (event) => {
 
 renderSelectedProducts();
 updateSummary();
+
+async function configureBackLink() {
+    if (!backLink) return;
+
+    try {
+        const session = await apiRequest("/auth/me");
+        // Confira o nome exato do campo de admin que vem em session.usuario (ex: admin, is_admin, perfil === "admin")
+        if (session?.usuario?.admin) {
+            backLink.href = "dashboard.html";
+        }
+    } catch {
+        // Se falhar, mantém o padrão "pedidos.html" que já está no HTML
+    }
+}
+
+renderSelectedProducts();
+updateSummary();
+void configureBackLink();
