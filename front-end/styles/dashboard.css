@@ -317,6 +317,12 @@ body {
     text-align: right;
 }
 
+.payment-empty {
+    grid-template-columns: 1fr;
+    color: #667085;
+    font-size: 13px;
+}
+
 .payment-rank {
     color: #667085;
     font-weight: 700;
