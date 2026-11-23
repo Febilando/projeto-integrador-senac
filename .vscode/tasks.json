@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Print frontend and API URLs",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Write-Output 'Frontend: http://localhost:5500'; Write-Output 'API: http://localhost:8000'; Write-Output 'API docs: http://localhost:8000/docs'"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		}
+	]
+}
