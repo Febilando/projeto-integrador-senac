@@ -1,9 +1,23 @@
 # Gerenciador de Pedidos
 
+## Grupo 38:
+* Felipe Xavier Marques 
+* Henrique Xavier Marques 
+* João Pedro Costa
+* Leonardo Dantas Albano 
+* Matheus de Castro Souza 
+* Pedro Braz Leite 
+* Thiago Malta Magalhães 
+* Wagner Matos Costa
+
+
+### Importante:
+
 Na pasta `back-end`, crie o arquivo local de configuração e defina senhas próprias nele:
 
 Defina as váriaveis de ambiente no .env
-(Se ainda não tiver um `.env`, utilize como base o `.env.example` e crie um `.env` para de suas senhas)
+
+(Se ainda não tiver um `.env`, utilize como base o `.env.example` e crie um `.env`)
 
 
 ## Primeiro administrador
@@ -40,6 +54,13 @@ para encerrar os containers.
 
 ## Execução local
 
+#### Requisitos para execução local
+- Python 3.11 ou superior.
+- MySQL 8.4 ou superior localmente, ou Docker para iniciar o banco do projeto.
+- Navegador moderno com suporte a JavaScript.
+- Portas `5500` e `8000` disponíveis.
+
+
 ### Preparar o backend
 
 A partir da raiz do repositório, crie o ambiente virtual e instale
@@ -55,7 +76,7 @@ python -m pip install -r requirements.txt
 Defina as váriaveis de ambiente no .env
 (Se ainda não tiver um `.env`, utilize como base o `.env.example` e crie um `.env` para de suas senhas)
 
-### Iniciar o MySQL
+#### Iniciar o MySQL
 
 Se não tiver um MySQL local já configurado com as credenciais do `.env`, abra
 um terminal na raiz do repositório e inicie somente o banco pelo Docker Compose:
@@ -65,8 +86,8 @@ docker compose up -d db
 ```
 
 O serviço usa `back-end\.env` e inicializa o banco com o script SQL do projeto.
-Se já houver um MySQL em execução, pule este passo e confirme que o `.env`
-contém as credenciais correspondentes.
+
+Se já houver um MySQL em execução, pule este passo e confirme que o `.env` contém as credenciais correspondentes.
 
 ### Iniciar a API e o frontend
 
