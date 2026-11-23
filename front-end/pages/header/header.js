@@ -36,16 +36,26 @@ async function carregarCabecalho() {
     const homeLink = document.querySelector("header .marca a");
     if (homeLink) homeLink.href = new URL("pages/pedidos.html", frontendRoot).href;
 
-    const lupa = document.querySelector("header form img");
-
-    if (lupa) {
-        lupa.src = new URL("../../assets/lupa.png", pastaHeader).href;
-    }
-
     const paginaAtual = document.querySelector("#pagina-atual");
 
     if (paginaAtual) {
         paginaAtual.textContent = document.title;
+    }
+
+    const headerDate = document.querySelector("#header-date");
+
+    if (headerDate) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+
+        headerDate.dateTime = `${year}-${month}-${day}`;
+        headerDate.textContent = new Intl.DateTimeFormat("pt-BR", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        }).format(today).replace(".", "");
     }
 
     document.dispatchEvent(new CustomEvent("app:header-loaded"));

@@ -49,34 +49,6 @@ header .marca strong {
     font-size: 22px;
 }
 
-header form {
-    display: flex;
-    align-items: center;
-    flex: 1 1 220px;
-    width: 260px;
-    min-width: 160px;
-    max-width: 260px;
-    box-sizing: border-box;
-    height: 42px;
-    margin-left: 32px;
-    padding: 0 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-}
-
-header form img {
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
-    object-fit: contain;
-}
-
-header form input {
-    width: 100%;
-    border: 0;
-    outline: 0;
-}
-
 header .acoes {
     flex: 0 0 auto;
     gap: 12px;
@@ -138,11 +110,6 @@ header .avatar {
 }
 
 @media (max-width: 1100px) {
-    header form {
-        min-width: 130px;
-        margin-left: 20px;
-    }
-
     header .acoes {
         gap: 8px;
     }
@@ -166,22 +133,12 @@ header .avatar {
         display: none;
     }
 
-    header form {
-        width: min(220px, 40vw);
-        min-width: 100px;
-        margin-left: 16px;
-    }
-
     header .acoes {
         gap: 8px;
     }
 }
 
 @media (max-width: 520px) {
-    header form {
-        display: none;
-    }
-
     header .logout-button {
         min-height: 34px;
         padding: 0 8px;

@@ -232,19 +232,6 @@ body {
     gap: 8px;
 }
 
-.dashboard-filter {
-    min-width: 38px;
-    min-height: 38px;
-    padding: 0;
-    border: 1px solid #D0D5DD;
-    color: #667085;
-    background: #FFFFFF;
-}
-
-.dashboard-filter:hover {
-    background: #F9FAFB;
-}
-
 .dashboard-table {
     min-width: 620px;
     margin-top: 16px;
@@ -373,6 +360,13 @@ body {
     font-weight: 700;
 }
 
+.payment-icon--image {
+    display: block;
+    border-radius: 6px;
+    background: transparent;
+    object-fit: contain;
+}
+
 .payment-icon--credit {
     background: #E45A69;
 }
@@ -387,19 +381,6 @@ body {
 
 .payment-icon--check {
     background: #7C9FE4;
-}
-
-.more-btn {
-    width: 100%;
-    min-height: 38px;
-    border: 1px solid #D0D5DD;
-    color: #667085;
-    background: #FFFFFF;
-    font-size: 13px;
-}
-
-.more-btn:hover {
-    background: #F9FAFB;
 }
 
 @media (max-width: 1180px) {

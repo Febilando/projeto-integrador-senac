@@ -7,7 +7,6 @@ const PAGE_PATHS = {
     pedidos: "pages/pedidos.html",
     "novo-pedido": "pages/caixa.html",
     produtos: "pages/produtos.html",
-    estatisticas: "pages/estatisticas.html",
     vendedores: "pages/vendedores.html",
 };
 
@@ -38,7 +37,7 @@ async function loadSidebar() {
             const destination = new URL(pagePath, FRONTEND_ROOT);
             link.href = destination.href;
             link.setAttribute("aria-label", link.textContent.trim());
-            if (pageKey === "dashboard" && !isAdmin) {
+            if ((pageKey === "dashboard" || pageKey === "vendedores") && !isAdmin) {
                 link.hidden = true;
             }
 

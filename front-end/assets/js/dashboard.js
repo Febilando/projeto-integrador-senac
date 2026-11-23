@@ -316,14 +316,22 @@ function renderPayments(monthOrders) {
         return;
     }
 
-    const variants = ["", "payment-icon--credit", "payment-icon--pix", "payment-icon--cash", "payment-icon--check"];
+    const paymentIcons = {
+        "Pix": "../assets/pix.png",
+        "Cartão de crédito": "../assets/cartao-de-credito.png",
+        "Cartão de débito": "../assets/cartao-de-debito .png",
+        "Dinheiro": "../assets/dinheiro.png",
+    };
     elements.paymentsList.innerHTML = rankedPayments.map(([payment, total], index) => {
         const percentage = totalRevenue ? (total / totalRevenue) * 100 : 0;
-        const initial = payment.charAt(0).toUpperCase();
+        const iconSource = paymentIcons[payment];
+        const icon = iconSource
+            ? `<img class="payment-icon payment-icon--image" src="${escapeHtml(iconSource)}" alt="">`
+            : '<span class="payment-icon" aria-hidden="true">?</span>';
         return `
             <li>
                 <span class="payment-rank">${index + 1}</span>
-                <span class="payment-icon ${variants[index]}">${escapeHtml(initial)}</span>
+                ${icon}
                 <span>${escapeHtml(payment)}</span>
                 <strong>${percentage.toFixed(0)}%</strong>
             </li>
