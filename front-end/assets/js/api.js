@@ -14,6 +14,8 @@ const API_FIELD_LABELS = {
     preco: "Preço",
     senha: "Senha",
     id: "ID",
+    funcao: "Função",
+    status: "Status",
 };
 let csrfToken = null;
 

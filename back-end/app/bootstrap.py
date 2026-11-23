@@ -49,22 +49,34 @@ def garantir_administrador_inicial():
                 raise RuntimeError("A função admin não está cadastrada no banco.")
 
             cursor.execute("SELECT id FROM Usuario WHERE id = %s", (ADMIN_ID,))
-            if cursor.fetchone() is not None:
-                raise RuntimeError(
-                    "Não foi possível criar o administrador: o ID 100 já está ocupado."
-                )
+            usuario_existente = cursor.fetchone()
+            senha_hash = hash_senha(senha)
 
-            cursor.execute(
-                """INSERT INTO Usuario (id, nome, senha, funcao, status)
-                   VALUES (%s, %s, %s, %s, %s)""",
-                (
-                    ADMIN_ID,
-                    ADMIN_NAME,
-                    hash_senha(senha),
-                    funcao["id"],
-                    ACTIVE_USER_STATUS,
-                ),
-            )
+            if usuario_existente is not None:
+                cursor.execute(
+                    """UPDATE Usuario
+                       SET nome = %s, senha = %s, funcao = %s, status = %s
+                       WHERE id = %s""",
+                    (
+                        ADMIN_NAME,
+                        senha_hash,
+                        funcao["id"],
+                        ACTIVE_USER_STATUS,
+                        ADMIN_ID,
+                    ),
+                )
+            else:
+                cursor.execute(
+                    """INSERT INTO Usuario (id, nome, senha, funcao, status)
+                       VALUES (%s, %s, %s, %s, %s)""",
+                    (
+                        ADMIN_ID,
+                        ADMIN_NAME,
+                        senha_hash,
+                        funcao["id"],
+                        ACTIVE_USER_STATUS,
+                    ),
+                )
             # O próximo processo só deve obter o lock depois de o admin estar visível.
             conexao.commit()
         finally:
