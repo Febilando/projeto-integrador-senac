@@ -13,7 +13,9 @@ docker compose up --build
 ```
 
 Frontend: <http://localhost:5500>.
+
 API: <http://localhost:8000>.
+
 Documentação interativa: <http://localhost:8000/docs>.
 
 Para parar o container, pressione `Ctrl+C` para parar a execução e em seguida, a partir da raiz do repositório digite:
