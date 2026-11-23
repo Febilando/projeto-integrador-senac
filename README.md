@@ -5,6 +5,17 @@ Na pasta `back-end`, crie o arquivo local de configuração e defina senhas pró
 Defina as váriaveis de ambiente no .env
 (Se ainda não tiver um `.env`, utilize como base o `.env.example` e crie um `.env` para de suas senhas)
 
+
+## Primeiro administrador
+
+Ao iniciar, a API cria automaticamente um administrador se ainda não
+existir nenhum. 
+
+O ID de login é `100`; defina a senha inicial no `.env` (é uma solução para esse contexto acadêmico, sabemos que não é segura)
+
+Acesse <http://localhost:5500/> com ID `100` e a senha configurada.
+
+
 ## Execução com Docker
 Na raiz do repositório, inicie o frontend, a API e o MySQL pelo comando:
 
@@ -25,15 +36,6 @@ docker compose down
 ```
 
 para encerrar os containers.
-
-## Primeiro administrador
-
-Ao iniciar, a API cria automaticamente um administrador se ainda não
-existir nenhum. 
-
-O ID de login é `100`; defina a senha inicial no `.env` (é uma solução para esse contexto acadêmico, sabemos que não é segura)
-
-Acesse <http://localhost:5500/> com ID `100` e a senha configurada.
 
 
 ## Execução local
