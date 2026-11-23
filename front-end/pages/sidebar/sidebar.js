@@ -9,8 +9,6 @@ const PAGE_PATHS = {
     produtos: "pages/produtos.html",
     estatisticas: "pages/estatisticas.html",
     vendedores: "pages/vendedores.html",
-    perfil: "pages/perfil.html",
-    configuracoes: "pages/configuracoes.html",
 };
 
 async function loadSidebar() {
