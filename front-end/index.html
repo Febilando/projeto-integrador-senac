@@ -33,43 +33,54 @@
                 </div>
             </article>
 
-            <section class="stats-grid" aria-label="Indicadores mensais">
-                <article class="stat-card">
-                    <div class="stat-heading">
-                        <span class="stat-icon stat-icon--invoice" aria-hidden="true">▤</span>
-                        <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
-                    </div>
-                    <p>Faturamento (Outubro)</p>
-                    <h3>R$588.940,44</h3>
-                    <span class="trend trend--positive">↗ 13,02% em relação a Set</span>
-                </article>
-                <article class="stat-card">
-                    <div class="stat-heading">
-                        <span class="stat-icon stat-icon--ticket" aria-hidden="true">▰</span>
-                        <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
-                    </div>
-                    <p>Ticket Médio (Outubro)</p>
-                    <h3>R$567,38</h3>
-                    <span class="trend trend--positive">↗ 3,02% em relação a Set</span>
-                </article>
-                <article class="stat-card">
-                    <div class="stat-heading">
-                        <span class="stat-icon stat-icon--sales" aria-hidden="true">▱</span>
-                        <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
-                    </div>
-                    <p>Total de Vendas (Outubro)</p>
-                    <h3>1.038</h3>
-                    <span class="trend trend--positive">↗ 6,02% em relação a Set</span>
-                </article>
-                <article class="stat-card">
-                    <div class="stat-heading">
-                        <span class="stat-icon stat-icon--sale" aria-hidden="true">$</span>
-                        <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
-                    </div>
-                    <p>Maior Venda (Outubro)</p>
-                    <h3>R$12.045,38</h3>
-                    <span class="trend trend--negative">↘ 0,32% em relação a Set</span>
-                </article>
+            <section class="stats-section" aria-label="Indicadores mensais">
+                <div class="stats-toolbar">
+                    <label for="stats-month">Mês exibido</label>
+                    <select class="dashboard-select" id="stats-month" aria-label="Selecionar mês dos indicadores">
+                        <option value="novembro">Novembro</option>
+                        <option value="outubro" selected>Outubro</option>
+                        <option value="setembro">Setembro</option>
+                    </select>
+                </div>
+
+                <div class="stats-grid">
+                    <article class="stat-card">
+                        <div class="stat-heading">
+                            <span class="stat-icon stat-icon--invoice" aria-hidden="true">▤</span>
+                            <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
+                        </div>
+                        <p>Faturamento (Outubro)</p>
+                        <h3>R$588.940,44</h3>
+                        <span class="trend trend--positive">↗ 13,02% em relação a Set</span>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-heading">
+                            <span class="stat-icon stat-icon--ticket" aria-hidden="true">▰</span>
+                            <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
+                        </div>
+                        <p>Ticket Médio (Outubro)</p>
+                        <h3>R$567,38</h3>
+                        <span class="trend trend--positive">↗ 3,02% em relação a Set</span>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-heading">
+                            <span class="stat-icon stat-icon--sales" aria-hidden="true">▱</span>
+                            <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
+                        </div>
+                        <p>Total de Vendas (Outubro)</p>
+                        <h3>1.038</h3>
+                        <span class="trend trend--positive">↗ 6,02% em relação a Set</span>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-heading">
+                            <span class="stat-icon stat-icon--sale" aria-hidden="true">$</span>
+                            <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
+                        </div>
+                        <p>Maior Venda (Outubro)</p>
+                        <h3>R$12.045,38</h3>
+                        <span class="trend trend--negative">↘ 0,32% em relação a Set</span>
+                    </article>
+                </div>
             </section>
         </section>
 
