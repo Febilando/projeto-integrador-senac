@@ -35,18 +35,21 @@
 
             <section class="stats-section" aria-label="Indicadores mensais">
                 <div class="stats-toolbar">
-                    <label for="stats-month">Mês exibido</label>
-                    <select class="dashboard-select" id="stats-month" aria-label="Selecionar mês dos indicadores">
-                        <option value="novembro">Novembro</option>
-                        <option value="outubro" selected>Outubro</option>
-                        <option value="setembro">Setembro</option>
-                    </select>
+                    <h2>Dados consolidados</h2>
+                    <div class="stats-month-control">
+                        <label for="stats-month">Mês exibido</label>
+                        <select class="dashboard-select" id="stats-month" aria-label="Selecionar mês dos indicadores">
+                            <option value="novembro">Novembro</option>
+                            <option value="outubro" selected>Outubro</option>
+                            <option value="setembro">Setembro</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="stats-grid">
                     <article class="stat-card">
                         <div class="stat-heading">
-                            <span class="stat-icon stat-icon--invoice" aria-hidden="true">▤</span>
+                            <span class="stat-icon" aria-hidden="true">▤</span>
                             <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
                         </div>
                         <p>Faturamento (Outubro)</p>
@@ -55,7 +58,7 @@
                     </article>
                     <article class="stat-card">
                         <div class="stat-heading">
-                            <span class="stat-icon stat-icon--ticket" aria-hidden="true">▰</span>
+                            <span class="stat-icon" aria-hidden="true">▰</span>
                             <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
                         </div>
                         <p>Ticket Médio (Outubro)</p>
@@ -64,7 +67,7 @@
                     </article>
                     <article class="stat-card">
                         <div class="stat-heading">
-                            <span class="stat-icon stat-icon--sales" aria-hidden="true">▱</span>
+                            <span class="stat-icon" aria-hidden="true">▱</span>
                             <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
                         </div>
                         <p>Total de Vendas (Outubro)</p>
@@ -73,7 +76,7 @@
                     </article>
                     <article class="stat-card">
                         <div class="stat-heading">
-                            <span class="stat-icon stat-icon--sale" aria-hidden="true">$</span>
+                            <span class="stat-icon" aria-hidden="true">$</span>
                             <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
                         </div>
                         <p>Maior Venda (Outubro)</p>
@@ -134,7 +137,7 @@
             <article class="card payments-card">
                 <h2>Pagamentos</h2>
                 <ol class="payment-list">
-                    <li><span class="payment-rank">1</span><span class="payment-icon payment-icon--debit">D</span><span>Débito</span><strong>35%</strong></li>
+                    <li><span class="payment-rank">1</span><span class="payment-icon">D</span><span>Débito</span><strong>35%</strong></li>
                     <li><span class="payment-rank">2</span><span class="payment-icon payment-icon--credit">C</span><span>Crédito</span><strong>30%</strong></li>
                     <li><span class="payment-rank">3</span><span class="payment-icon payment-icon--pix">P</span><span>Pix</span><strong>21%</strong></li>
                     <li><span class="payment-rank">4</span><span class="payment-icon payment-icon--cash">$</span><span>Dinheiro</span><strong>12%</strong></li>
