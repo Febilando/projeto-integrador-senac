@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/reset.css">
     <link rel="stylesheet" href="../styles/sidebar.css">
     <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/charts.min.css">
     <link rel="stylesheet" href="../styles/dashboard.css">
     <script src="header/header.js" defer></script>
     <script type="module" src="sidebar/sidebar.js"></script>
@@ -22,12 +23,15 @@
             <article class="card revenue-card">
                 <div class="card-heading">
                     <p>Faturamento atual</p>
-                    <select class="dashboard-select" id="revenue-month" aria-label="Período do faturamento"></select>
+                    <select class="dashboard-select" id="revenue-period" aria-label="Período do gráfico">
+                        <option value="30">Últimos 30 dias</option>
+                        <option value="3">Últimos 3 meses</option>
+                        <option value="6">Últimos 6 meses</option>
+                        <option value="12">Últimos 12 meses</option>
+                    </select>
                 </div>
                 <h2 class="revenue-value"><span id="revenue-value">Carregando...</span> <span class="positive" id="revenue-change"></span></h2>
-                <div class="chart-placeholder" aria-label="Área reservada para o gráfico">
-                    <span>Gráfico</span>
-                </div>
+                <div class="revenue-chart" id="revenue-chart" aria-label="Gráfico de faturamento"></div>
             </article>
 
             <section class="stats-section" aria-label="Indicadores mensais">

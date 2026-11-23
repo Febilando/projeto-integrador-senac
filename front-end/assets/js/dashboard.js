@@ -12,7 +12,7 @@ const monthFormatter = new Intl.DateTimeFormat("pt-BR", {
 
 const elements = {
     statsMonth: document.getElementById("stats-month"),
-    revenueMonth: document.getElementById("revenue-month"),
+    revenuePeriod: document.getElementById("revenue-period"),
     productsMonth: document.getElementById("products-month"),
     revenueValue: document.getElementById("revenue-value"),
     revenueChange: document.getElementById("revenue-change"),
@@ -30,6 +30,7 @@ const elements = {
     largestSaleTrend: document.getElementById("largest-sale-trend"),
     productsBody: document.getElementById("dashboard-products-body"),
     paymentsList: document.getElementById("dashboard-payments"),
+    revenueChart: document.getElementById("revenue-chart"),
 };
 
 let orders = [];
@@ -86,6 +87,113 @@ function setTrend(element, change) {
     element.classList.toggle("trend--negative", change !== null && change < 0);
 }
 
+function getChartBuckets(period) {
+    const now = new Date();
+    const bucketCount = period === "30" ? 30 : Number(period);
+    const buckets = [];
+
+    if (period === "30") {
+        for (let offset = bucketCount - 1; offset >= 0; offset -= 1) {
+            const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() - offset);
+            buckets.push({
+                key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
+                label: String(date.getDate()).padStart(2, "0"),
+                type: "day",
+            });
+        }
+        return buckets;
+    }
+
+    for (let offset = bucketCount - 1; offset >= 0; offset -= 1) {
+        const date = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+        buckets.push({
+            key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`,
+            label: new Intl.DateTimeFormat("pt-BR", { month: "short" }).format(date).replace(".", ""),
+            type: "month",
+        });
+    }
+    return buckets;
+}
+
+function getOrderChartKey(order, type) {
+    const date = parseOrderDate(order.horario);
+    if (!date) return null;
+    if (type === "day") {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    }
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function renderRevenueChart() {
+    const buckets = getChartBuckets(elements.revenuePeriod.value);
+    const totals = new Map(buckets.map((bucket) => [bucket.key, 0]));
+
+    orders.forEach((order) => {
+        const key = getOrderChartKey(order, buckets[0].type);
+        if (totals.has(key)) {
+            totals.set(key, totals.get(key) + getOrderTotal(order));
+        }
+    });
+
+    const values = buckets.map((bucket) => totals.get(bucket.key) || 0);
+    const maximum = Math.max(...values, 1);
+    const chartHeight = 210;
+    const chartWidth = 760;
+    const left = 38;
+    const right = 12;
+    const top = 16;
+    const bottom = 30;
+    const plotWidth = chartWidth - left - right;
+    const plotHeight = chartHeight - top - bottom;
+    const step = buckets.length > 1 ? plotWidth / (buckets.length - 1) : 0;
+    const roundedMaximum = maximum > 0 ? Math.ceil(maximum / 100) * 100 : 100;
+
+    const points = values.map((value, index) => {
+        const x = left + (step * index);
+        const y = top + plotHeight - ((value / roundedMaximum) * plotHeight);
+        return { x, y, value };
+    });
+    const pointsString = points.map((point) => `${point.x.toFixed(2)},${point.y.toFixed(2)}`).join(" ");
+
+    const gridLines = [0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+        const y = top + (plotHeight * ratio);
+        const value = roundedMaximum * (1 - ratio);
+        return `
+            <line x1="${left}" y1="${y}" x2="${chartWidth - right}" y2="${y}" class="revenue-chart-grid" />
+            <text x="${left - 8}" y="${y + 4}" text-anchor="end" class="revenue-chart-axis">
+                ${escapeHtml(value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value.toFixed(0))}
+            </text>
+        `;
+    }).join("");
+
+    const labelIndexes = buckets.length <= 12
+        ? buckets.map((_, index) => index)
+        : Array.from({ length: 6 }, (_, index) => Math.round(index * (buckets.length - 1) / 5));
+    const labels = labelIndexes.map((index) => {
+        const point = points[index];
+        return `
+            <text x="${point.x}" y="${chartHeight - 8}" text-anchor="middle" class="revenue-chart-label">
+                ${escapeHtml(buckets[index].label)}
+            </text>
+        `;
+    }).join("");
+
+    elements.revenueChart.innerHTML = `
+        <svg class="dashboard-line-chart" viewBox="0 0 ${chartWidth} ${chartHeight}"
+             role="img" aria-label="Gráfico de faturamento">
+            ${gridLines}
+            <polyline points="${pointsString}" class="revenue-chart-line"
+                      vector-effect="non-scaling-stroke" />
+            ${points.map((point) => `
+                <circle cx="${point.x}" cy="${point.y}" r="3" class="revenue-chart-point">
+                    <title>${escapeHtml(currencyFormatter.format(point.value))}</title>
+                </circle>
+            `).join("")}
+            ${labels}
+        </svg>
+    `;
+}
+
 function renderSummary() {
     const monthKey = elements.statsMonth.value;
     const monthOrders = getMonthOrders(monthKey);
@@ -134,6 +242,7 @@ function renderSummary() {
 
     renderProducts(monthOrders);
     renderPayments(monthOrders);
+    renderRevenueChart();
 }
 
 function renderProducts(monthOrders) {
@@ -234,19 +343,17 @@ function populateMonthSelects() {
         return option;
     });
 
-    [elements.statsMonth, elements.revenueMonth, elements.productsMonth].forEach((select) => {
+    [elements.statsMonth, elements.productsMonth].forEach((select) => {
         select.replaceChildren(...monthOptions.map((option) => option.cloneNode(true)));
     });
 
     const latestMonth = availableMonths[availableMonths.length - 1] || "";
     elements.statsMonth.value = latestMonth;
-    elements.revenueMonth.value = latestMonth;
     elements.productsMonth.value = latestMonth;
 }
 
 function synchronizeMonth(monthKey) {
     elements.statsMonth.value = monthKey;
-    elements.revenueMonth.value = monthKey;
     elements.productsMonth.value = monthKey;
     renderSummary();
 }
@@ -285,8 +392,10 @@ async function loadDashboard() {
     }
 }
 
-[elements.statsMonth, elements.revenueMonth, elements.productsMonth].forEach((select) => {
+[elements.statsMonth, elements.productsMonth].forEach((select) => {
     select.addEventListener("change", () => synchronizeMonth(select.value));
 });
+
+elements.revenuePeriod.addEventListener("change", renderRevenueChart);
 
 loadDashboard();
