@@ -1,7 +1,7 @@
 const SIDEBAR_FRAGMENT_URL = new URL("sidebar.html", import.meta.url);
 const FRONTEND_ROOT = new URL("../../", import.meta.url);
 const PAGE_PATHS = {
-    dashboard: "index.html",
+    dashboard: "pages/dashboard.html",
     pedidos: "pages/pedidos.html",
     "novo-pedido": "pages/caixa.html",
     produtos: "pages/produtos.html",

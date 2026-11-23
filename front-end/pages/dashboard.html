@@ -6,12 +6,118 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="../styles/reset.css">
     <link rel="stylesheet" href="../styles/sidebar.css">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/charts.min.css">
+    <link rel="stylesheet" href="../styles/dashboard.css">
     <script src="header/header.js" defer></script>
     <script type="module" src="sidebar/sidebar.js"></script>
     <script type="module" src="../assets/js/auth-guard.js"></script>
+    <script type="module" src="../assets/js/dashboard.js"></script>
 </head>
 <body class="has-sidebar">
     <aside class="sidebar" id="app-sidebar" aria-label="Navegação do sistema"></aside>
     <header></header>
+
+    <main class="dashboard-main">
+        <section class="dashboard-grid dashboard-grid--top">
+            <article class="card revenue-card">
+                <div class="card-heading">
+                    <p>Faturamento atual</p>
+                    <select class="dashboard-select" id="revenue-period" aria-label="Período do gráfico">
+                        <option value="30">Últimos 30 dias</option>
+                        <option value="3">Últimos 3 meses</option>
+                        <option value="6">Últimos 6 meses</option>
+                        <option value="12">Últimos 12 meses</option>
+                    </select>
+                </div>
+                <h2 class="revenue-value"><span id="revenue-value">Carregando...</span> <span class="positive" id="revenue-change"></span></h2>
+                <div class="revenue-chart" id="revenue-chart" aria-label="Gráfico de faturamento"></div>
+            </article>
+
+            <section class="stats-section" aria-label="Indicadores mensais">
+                <div class="stats-toolbar">
+                    <h2>Dados consolidados</h2>
+                    <div class="stats-month-control">
+                        <label for="stats-month">Mês exibido</label>
+                        <select class="dashboard-select" id="stats-month" aria-label="Selecionar mês dos indicadores"></select>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <article class="stat-card">
+                        <div class="stat-heading">
+                            <span class="stat-icon" aria-hidden="true">▤</span>
+                            <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
+                        </div>
+                        <p id="revenue-stat-label">Faturamento</p>
+                        <h3 id="revenue-stat-value">—</h3>
+                        <span class="trend trend--positive" id="revenue-stat-trend"></span>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-heading">
+                            <span class="stat-icon" aria-hidden="true">▰</span>
+                            <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
+                        </div>
+                        <p id="ticket-stat-label">Ticket Médio</p>
+                        <h3 id="ticket-stat-value">—</h3>
+                        <span class="trend trend--positive" id="ticket-trend"></span>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-heading">
+                            <span class="stat-icon" aria-hidden="true">▱</span>
+                            <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
+                        </div>
+                        <p id="sales-stat-label">Total de Vendas</p>
+                        <h3 id="sales-stat-value">—</h3>
+                        <span class="trend trend--positive" id="sales-trend"></span>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-heading">
+                            <span class="stat-icon" aria-hidden="true">$</span>
+                            <button class="stat-menu" type="button" aria-label="Mais opções">•••</button>
+                        </div>
+                        <p id="largest-sale-stat-label">Maior Venda</p>
+                        <h3 id="largest-sale-stat-value">—</h3>
+                        <span class="trend trend--negative" id="largest-sale-trend"></span>
+                    </article>
+                </div>
+            </section>
+        </section>
+
+        <section class="dashboard-grid dashboard-grid--bottom">
+            <article class="card products-card">
+                <div class="card-heading">
+                    <h2>Produtos</h2>
+                    <div class="products-actions">
+                        <button class="dashboard-filter" type="button" aria-label="Filtrar produtos">▽</button>
+                        <select class="dashboard-select" id="products-month" aria-label="Período dos produtos"></select>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table dashboard-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Preço</th>
+                                <th scope="col">Vendidos</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboard-products-body">
+                            <tr><td colspan="4" class="table-message">Carregando produtos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article class="card payments-card">
+                <h2>Pagamentos</h2>
+                <ol class="payment-list" id="dashboard-payments">
+                    <li class="payment-empty">Carregando pagamentos...</li>
+                </ol>
+                <button class="more-btn" type="button">Exibir Mais</button>
+            </article>
+        </section>
+    </main>
 </body>
 </html>
