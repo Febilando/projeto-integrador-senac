@@ -1,6 +1,10 @@
 # Gerenciador de Pedidos
 Sistema web para vendas e gerenciamento de pedidos, produtos, estoque e usuários e uma API desenvolvida com FastAPI.
 
+## Vídeo de apresentação
+
+<https://youtu.be/F0h6KC9GrXk>
+
 ## Grupo 38
 
 - Felipe Xavier Marques
